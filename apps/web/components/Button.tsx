@@ -3,13 +3,14 @@ import { fontSizes, fontWeights, radius, spacing } from "@repo/utils/styles/toke
 
 type ButtonProps = {
     title: string
+    loadingTitle?: string
     onPress: () => void
     loading?: boolean
     disabled?: boolean
     style?: React.CSSProperties
 }
 
-export const Button = ({ title, onPress, loading, disabled, style }: ButtonProps) => (
+export const Button = ({ title, loadingTitle, onPress, loading, disabled, style }: ButtonProps) => (
     <button
         type="button"
         onClick={onPress}
@@ -33,7 +34,7 @@ export const Button = ({ title, onPress, loading, disabled, style }: ButtonProps
             ...(style || {}),
         }}
     >
-        {loading ? "Loading..." : title}
+        {loading ? (loadingTitle || "Loading...") : title}
     </button>
 )
 

@@ -28,6 +28,7 @@ export default function AuthSplitLayout({ children }: AuthSplitLayoutProps) {
           background-color: ${Colors.neutral10};
         }
         .auth-logo {
+          display: none;
           position: absolute;
           top: ${spacing.xl}px;
           left: ${spacing.xl}px;
@@ -74,6 +75,19 @@ export default function AuthSplitLayout({ children }: AuthSplitLayoutProps) {
           }
           .auth-left-panel {
             padding: ${spacing.xl}px ${spacing.lg}px;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
+          }
+          .auth-logo {
+            position: static;
+            display: flex;
+            justify-content: center;
+            margin-bottom: ${spacing.xxl}px;
+            margin-top: ${spacing.xxxl}px;
+          }
+          .auth-logo img {
+            height: 48px;
           }
         }
       `}</style>

@@ -15,6 +15,7 @@ import { Colors } from "@repo/utils/constants/colors"
 import { fontSizes, fontWeights, radius, spacing } from "@repo/utils/styles/tokens"
 import { Validation } from "@repo/utils/validation"
 import { useAuthContext } from "../contexts/AuthContext"
+import { LoggedInHeader } from "../components/common/LoggedInHeader"
 
 const BASE_URL = "https://api.dealkroo.com/api"
 
@@ -319,364 +320,367 @@ const ProfilePage: NextPage = () => {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: Colors.headerBackground,
-        padding: `${spacing.xxxl}px ${spacing.screen}px`,
-        display: "flex",
-        justifyContent: "center",
-      }}
-    >
+    <>
+      <style>{`
+        .profile-input::placeholder {
+          color: ${Colors.placeholder};
+        }
+      `}</style>
       <div
         style={{
-          width: "100%",
-          maxWidth: 1200,
+          minHeight: "100vh",
           backgroundColor: Colors.neutral10,
-          borderRadius: radius.xxl,
-          padding: spacing.xl,
-          boxShadow: "0 12px 40px rgba(15,23,42,0.25)",
         }}
       >
         {/* Header */}
-        <header
+        <LoggedInHeader />
+
+        {/* Main Content */}
+        <div
           style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: spacing.lg,
-            gap: spacing.md,
+            maxWidth: 1000,
+            margin: "0 auto",
+            padding: `${spacing.xxxl}px ${spacing.xl}px`,
           }}
         >
-          <div
+          {/* Page Title */}
+          <h1
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: spacing.md,
+              fontSize: fontSizes.xl,
+              fontWeight: fontWeights.semibold,
+              color: Colors.text,
+              marginBottom: spacing.xxl,
             }}
           >
+            My Profile
+          </h1>
+
+          {/* Status messages */}
+          {globalError && (
             <div
               style={{
-                width: 56,
-                height: 56,
-                borderRadius: radius.pill,
-                backgroundColor: Colors.neutral30,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: fontSizes.md,
-                fontWeight: fontWeights.semibold,
-                color: Colors.text,
+                marginBottom: spacing.md,
+                padding: spacing.sm,
+                borderRadius: radius.md,
+                backgroundColor: Colors.backgroundCash,
+                color: Colors.textCash,
+                fontSize: fontSizes.sm,
               }}
             >
-              {initials}
+              {globalError}
             </div>
-            <div>
-              <h1
+          )}
+          {globalSuccess && (
+            <div
+              style={{
+                marginBottom: spacing.md,
+                padding: spacing.sm,
+                borderRadius: radius.md,
+                backgroundColor: "#ECFDF5",
+                color: Colors.success2,
+                fontSize: fontSizes.sm,
+              }}
+            >
+              {globalSuccess}
+            </div>
+          )}
+
+          {/* Profile Form */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              void handleSave()
+            }}
+          >
+            <style>{`
+              .profile-form-container {
+                display: flex;
+                gap: 48px;
+                align-items: flex-start;
+              }
+              .profile-form-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+              }
+              .profile-field-half {
+                max-width: calc(50% - 10px);
+              }
+              @media (max-width: 768px) {
+                .profile-form-container {
+                  flex-direction: column;
+                  gap: 24px;
+                  align-items: center;
+                }
+                .profile-form-grid {
+                  grid-template-columns: 1fr;
+                }
+                .profile-field-half {
+                  max-width: 100%;
+                }
+              }
+            `}</style>
+            <div className="profile-form-container">
+              {/* Avatar Section */}
+              <div
                 style={{
-                  fontSize: fontSizes.xl,
-                  fontWeight: fontWeights.bold,
+                  width: 100,
+                  height: 100,
+                  borderRadius: "50%",
+                  backgroundColor: Colors.neutral30,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: fontSizes.xxl,
+                  fontWeight: fontWeights.semibold,
                   color: Colors.text,
-                  marginBottom: spacing.xs,
+                  overflow: "hidden",
+                  flexShrink: 0,
                 }}
               >
-                My Profile
-              </h1>
-              <p style={{ fontSize: fontSizes.sm, color: Colors.textSecondary }}>
-                Update your personal details and manage your account.
-              </p>
+                {initials}
+              </div>
+
+              {/* Form Fields */}
+              <div style={{ flex: 1, width: "100%" }}>
+                {/* Row 1: Full Name + Contact Number */}
+                <div className="profile-form-grid" style={{ marginBottom: spacing.lg }}>
+                  {/* Full Name */}
+                  <div>
+                    <label
+                      style={{
+                        display: "block",
+                        marginBottom: spacing.xs,
+                        fontSize: fontSizes.sm,
+                        fontWeight: fontWeights.regular,
+                        color: Colors.text,
+                      }}
+                    >
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      className="profile-input"
+                      placeholder="Enter your full name"
+                      value={editData.name}
+                      onChange={(e) => handleInputChange("name", e.target.value)}
+                      onBlur={handleBlur("name")}
+                      disabled={loading || isLoggingOut}
+                      style={{
+                        width: "100%",
+                        borderRadius: radius.pill,
+                        border: `1px solid ${touched.name && errors.name ? Colors.error : Colors.border}`,
+                        padding: `${spacing.sm}px ${spacing.lg}px`,
+                        fontSize: fontSizes.sm,
+                        backgroundColor: Colors.inputBackground,
+                        color: Colors.text,
+                        outline: "none",
+                        fontFamily: "inherit",
+                      }}
+                    />
+                    {touched.name && errors.name && (
+                      <p
+                        style={{
+                          marginTop: spacing.xs,
+                          fontSize: fontSizes.xs,
+                          color: Colors.error,
+                        }}
+                      >
+                        {errors.name}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <label
+                      style={{
+                        display: "block",
+                        marginBottom: spacing.xs,
+                        fontSize: fontSizes.sm,
+                        fontWeight: fontWeights.regular,
+                        color: Colors.text,
+                      }}
+                    >
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      className="profile-input"
+                      placeholder="Enter your email"
+                      value={editData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      onBlur={handleBlur("email")}
+                      disabled={loading || isLoggingOut}
+                      style={{
+                        width: "100%",
+                        borderRadius: radius.pill,
+                        border: `1px solid ${touched.email && errors.email ? Colors.error : Colors.border}`,
+                        padding: `${spacing.sm}px ${spacing.lg}px`,
+                        fontSize: fontSizes.sm,
+                        backgroundColor: Colors.inputBackground,
+                        color: Colors.text,
+                        outline: "none",
+                        fontFamily: "inherit",
+                      }}
+                    />
+                    {touched.email && errors.email && (
+                      <p
+                        style={{
+                          marginTop: spacing.xs,
+                          fontSize: fontSizes.xs,
+                          color: Colors.error,
+                        }}
+                      >
+                        {errors.email}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Row 2: Contact Number + Estate Name */}
+                <div className="profile-form-grid">
+                  {/* Contact Number */}
+                  <div>
+                    <label
+                      style={{
+                        display: "block",
+                        marginBottom: spacing.xs,
+                        fontSize: fontSizes.sm,
+                        fontWeight: fontWeights.regular,
+                        color: Colors.text,
+                      }}
+                    >
+                      Contact Number
+                    </label>
+                    <input
+                      type="tel"
+                      className="profile-input"
+                      placeholder="+92  300 xxxx xxx"
+                      value={editData.contactNo}
+                      maxLength={11}
+                      onChange={(e) => handleInputChange("contactNo", e.target.value)}
+                      onBlur={handleBlur("contactNo")}
+                      disabled={loading || isLoggingOut}
+                      style={{
+                        width: "100%",
+                        borderRadius: radius.pill,
+                        border: `1px solid ${touched.contactNo && errors.contactNo ? Colors.error : Colors.border}`,
+                        padding: `${spacing.sm}px ${spacing.lg}px`,
+                        fontSize: fontSizes.sm,
+                        backgroundColor: Colors.inputBackground,
+                        color: Colors.text,
+                        outline: "none",
+                        fontFamily: "inherit",
+                      }}
+                    />
+                    {touched.contactNo && errors.contactNo && (
+                      <p
+                        style={{
+                          marginTop: spacing.xs,
+                          fontSize: fontSizes.xs,
+                          color: Colors.error,
+                        }}
+                      >
+                        {errors.contactNo}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Estate Name */}
+                  <div>
+                    <label
+                      style={{
+                        display: "block",
+                        marginBottom: spacing.xs,
+                        fontSize: fontSizes.sm,
+                        fontWeight: fontWeights.regular,
+                        color: Colors.text,
+                      }}
+                    >
+                      Estate Name
+                    </label>
+                    <input
+                      type="text"
+                      className="profile-input"
+                      placeholder="Enter your estate name"
+                      value={editData.estateName}
+                      onChange={(e) => handleInputChange("estateName", e.target.value)}
+                      onBlur={handleBlur("estateName")}
+                      disabled={loading || isLoggingOut}
+                      style={{
+                        width: "100%",
+                        borderRadius: radius.pill,
+                        border: `1px solid ${touched.estateName && errors.estateName ? Colors.error : Colors.border}`,
+                        padding: `${spacing.sm}px ${spacing.lg}px`,
+                        fontSize: fontSizes.sm,
+                        backgroundColor: Colors.inputBackground,
+                        color: Colors.text,
+                        outline: "none",
+                        fontFamily: "inherit",
+                      }}
+                    />
+                    {touched.estateName && errors.estateName && (
+                      <p
+                        style={{
+                          marginTop: spacing.xs,
+                          fontSize: fontSizes.xs,
+                          color: Colors.error,
+                        }}
+                      >
+                        {errors.estateName}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowDeleteModal(true)}
-            style={{
-              borderRadius: radius.pill,
-              padding: `${spacing.xs}px ${spacing.md}px`,
-              border: `1px solid ${Colors.error}`,
-              backgroundColor: "#FEF2F2",
-              color: "#B91C1C",
-              fontSize: fontSizes.xs,
-              fontWeight: fontWeights.semibold,
-              cursor: "pointer",
-            }}
-          >
-            Delete Account
-          </button>
-        </header>
 
-        {/* Status messages */}
-        {globalError && (
-          <div
-            style={{
-              marginBottom: spacing.md,
-              padding: spacing.sm,
-              borderRadius: radius.md,
-              backgroundColor: Colors.backgroundCash,
-              color: Colors.textCash,
-              fontSize: fontSizes.sm,
-            }}
-          >
-            {globalError}
-          </div>
-        )}
-        {globalSuccess && (
-          <div
-            style={{
-              marginBottom: spacing.md,
-              padding: spacing.sm,
-              borderRadius: radius.md,
-              backgroundColor: "#ECFDF5",
-              color: Colors.success2,
-              fontSize: fontSizes.sm,
-            }}
-          >
-            {globalSuccess}
-          </div>
-        )}
-
-        {/* Form */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-            void handleSave()
-          }}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: spacing.lg,
-          }}
-        >
-          {/* Form fields - two column layout to match Figma */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "minmax(0, 1.4fr) minmax(0, 1fr)",
-              columnGap: spacing.xl,
-              rowGap: spacing.lg,
-            }}
-          >
-            {/* Full Name */}
-            <div>
-              <label
+            {/* Action Buttons - right aligned */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: spacing.md,
+                marginTop: spacing.xxxl,
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(true)}
                 style={{
-                  display: "block",
-                  marginBottom: spacing.xs,
-                  fontSize: fontSizes.sm,
-                  fontWeight: fontWeights.medium,
-                  color: Colors.text,
-                }}
-              >
-                Full Name
-              </label>
-              <input
-                type="text"
-                placeholder="Enter your full name"
-                value={editData.name}
-                onChange={(e) => handleInputChange("name", e.target.value)}
-                onBlur={handleBlur("name")}
-                disabled={loading || isLoggingOut}
-                style={{
-                  width: "100%",
                   borderRadius: radius.pill,
-                  border: `1px solid ${touched.name && errors.name ? Colors.error : Colors.border}`,
-                  padding: `${spacing.sm}px ${spacing.md}px`,
+                  padding: `${spacing.sm}px ${spacing.xl}px`,
+                  border: `1px solid ${Colors.error}`,
+                  backgroundColor: "transparent",
+                  color: Colors.error,
                   fontSize: fontSizes.sm,
-                  backgroundColor: Colors.neutral10,
-                }}
-              />
-              {touched.name && errors.name && (
-                <p
-                  style={{
-                    marginTop: spacing.xs,
-                    fontSize: fontSizes.xs,
-                    color: Colors.error,
-                  }}
-                >
-                  {errors.name}
-                </p>
-              )}
-            </div>
-
-            {/* Contact Number */}
-            <div>
-              <label
-                style={{
-                  display: "block",
-                  marginBottom: spacing.xs,
-                  fontSize: fontSizes.sm,
-                  fontWeight: fontWeights.medium,
-                  color: Colors.text,
+                  fontWeight: fontWeights.regular,
+                  cursor: "pointer",
                 }}
               >
-                Contact Number
-              </label>
-              <input
-                type="tel"
-                placeholder="Enter your contact number"
-                value={editData.contactNo}
-                maxLength={11}
-                onChange={(e) => handleInputChange("contactNo", e.target.value)}
-                onBlur={handleBlur("contactNo")}
-                disabled={loading || isLoggingOut}
-                style={{
-                  width: "100%",
-                  borderRadius: radius.pill,
-                  border: `1px solid ${touched.contactNo && errors.contactNo ? Colors.error : Colors.border
-                    }`,
-                  padding: `${spacing.sm}px ${spacing.md}px`,
-                  fontSize: fontSizes.sm,
-                  backgroundColor: Colors.neutral10,
-                }}
-              />
-              {touched.contactNo && errors.contactNo && (
-                <p
-                  style={{
-                    marginTop: spacing.xs,
-                    fontSize: fontSizes.xs,
-                    color: Colors.error,
-                  }}
-                >
-                  {errors.contactNo}
-                </p>
-              )}
-            </div>
-
-            {/* Estate Name (full width row) */}
-            <div style={{ gridColumn: "1 / span 2" }}>
-              <label
-                style={{
-                  display: "block",
-                  marginBottom: spacing.xs,
-                  fontSize: fontSizes.sm,
-                  fontWeight: fontWeights.medium,
-                  color: Colors.text,
-                }}
-              >
-                Estate Name
-              </label>
-              <input
-                type="text"
-                placeholder="Enter your estate name"
-                value={editData.estateName}
-                onChange={(e) => handleInputChange("estateName", e.target.value)}
-                onBlur={handleBlur("estateName")}
-                disabled={loading || isLoggingOut}
-                style={{
-                  width: "100%",
-                  borderRadius: radius.pill,
-                  border: `1px solid ${touched.estateName && errors.estateName ? Colors.error : Colors.border
-                    }`,
-                  padding: `${spacing.sm}px ${spacing.md}px`,
-                  fontSize: fontSizes.sm,
-                  backgroundColor: Colors.neutral10,
-                }}
-              />
-              {touched.estateName && errors.estateName && (
-                <p
-                  style={{
-                    marginTop: spacing.xs,
-                    fontSize: fontSizes.xs,
-                    color: Colors.error,
-                  }}
-                >
-                  {errors.estateName}
-                </p>
-              )}
-            </div>
-
-            {/* Email (kept for completeness, right column under estate on larger screens) */}
-            <div style={{ gridColumn: "1 / span 2", maxWidth: 420 }}>
-              <label
-                style={{
-                  display: "block",
-                  marginBottom: spacing.xs,
-                  fontSize: fontSizes.sm,
-                  fontWeight: fontWeights.medium,
-                  color: Colors.text,
-                }}
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={editData.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-                onBlur={handleBlur("email")}
-                disabled={loading || isLoggingOut}
-                style={{
-                  width: "100%",
-                  borderRadius: radius.pill,
-                  border: `1px solid ${touched.email && errors.email ? Colors.error : Colors.border}`,
-                  padding: `${spacing.sm}px ${spacing.md}px`,
-                  fontSize: fontSizes.sm,
-                  backgroundColor: Colors.neutral10,
-                }}
-              />
-              {touched.email && errors.email && (
-                <p
-                  style={{
-                    marginTop: spacing.xs,
-                    fontSize: fontSizes.xs,
-                    color: Colors.error,
-                  }}
-                >
-                  {errors.email}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              marginTop: spacing.lg,
-              gap: spacing.sm,
-            }}
-          >
-            {hasChanges && (
+                Delete Account
+              </button>
               <button
                 type="submit"
                 disabled={isUpdateDisabled}
                 style={{
                   borderRadius: radius.pill,
-                  padding: `${spacing.sm}px ${spacing.lg * 1.2}px`,
+                  padding: `${spacing.sm}px ${spacing.xl}px`,
                   border: "none",
                   backgroundColor: isUpdateDisabled ? Colors.neutral60 : Colors.neutral100,
                   color: Colors.neutral10,
                   fontSize: fontSizes.sm,
-                  fontWeight: fontWeights.semibold,
+                  fontWeight: fontWeights.regular,
                   cursor: isUpdateDisabled ? "not-allowed" : "pointer",
+                  opacity: isUpdateDisabled ? 0.5 : 1,
                 }}
               >
                 {loading ? "Updating..." : "Update"}
               </button>
-            )}
-
-            <button
-              type="button"
-              onClick={handleLogout}
-              disabled={loading || isLoggingOut}
-              style={{
-                borderRadius: radius.pill,
-                padding: `${spacing.sm}px ${spacing.lg}px`,
-                border: "none",
-                backgroundColor: Colors.error,
-                color: Colors.neutral10,
-                fontSize: fontSizes.sm,
-                fontWeight: fontWeights.semibold,
-                cursor: loading || isLoggingOut ? "not-allowed" : "pointer",
-                opacity: loading || isLoggingOut ? 0.7 : 1,
-              }}
-            >
-              {isLoggingOut ? "Logging out..." : "Logout"}
-            </button>
-          </div>
-        </form>
+            </div>
+          </form>
+        </div>
 
         {/* Delete Account Modal */}
         {showDeleteModal && (
@@ -685,10 +689,15 @@ const ProfilePage: NextPage = () => {
               position: "fixed",
               inset: 0,
               backgroundColor: "rgba(0,0,0,0.5)",
+              backdropFilter: "blur(4px)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              zIndex: 50,
+              zIndex: 1000,
+              padding: 24,
+            }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget && !isDeleting) setShowDeleteModal(false)
             }}
           >
             <div
@@ -696,17 +705,18 @@ const ProfilePage: NextPage = () => {
                 width: "100%",
                 maxWidth: 420,
                 backgroundColor: Colors.neutral10,
-                borderRadius: radius.xxl,
-                padding: spacing.lg,
-                boxShadow: "0 12px 40px rgba(15,23,42,0.35)",
+                borderRadius: 24,
+                padding: 32,
+                boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
               }}
+              onClick={(e) => e.stopPropagation()}
             >
               <h2
                 style={{
-                  fontSize: fontSizes.lg,
-                  fontWeight: fontWeights.bold,
+                  fontSize: fontSizes.xl,
+                  fontWeight: fontWeights.semibold,
                   color: Colors.text,
-                  marginBottom: spacing.sm,
+                  marginBottom: spacing.md,
                   textAlign: "center",
                 }}
               >
@@ -716,20 +726,19 @@ const ProfilePage: NextPage = () => {
                 style={{
                   fontSize: fontSizes.sm,
                   color: Colors.textSecondary,
-                  marginBottom: spacing.md,
+                  marginBottom: spacing.xl,
                   textAlign: "center",
+                  lineHeight: 1.5,
                 }}
               >
-                Are you sure you want to delete your account? This will permanently remove your
-                listings and profile data.
+                Are you sure you want to delete your account? This will permanently remove your listings and profile data.
               </p>
 
               <div
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: spacing.xs,
-                  marginTop: spacing.sm,
+                  gap: spacing.sm,
                 }}
               >
                 <button
@@ -737,8 +746,9 @@ const ProfilePage: NextPage = () => {
                   onClick={handleDeleteAccount}
                   disabled={isDeleting}
                   style={{
+                    width: "100%",
                     borderRadius: radius.pill,
-                    padding: `${spacing.md2}px ${spacing.lg}px`,
+                    padding: `${spacing.md}px ${spacing.lg}px`,
                     border: "none",
                     backgroundColor: Colors.error,
                     color: Colors.neutral10,
@@ -755,8 +765,9 @@ const ProfilePage: NextPage = () => {
                   onClick={() => setShowDeleteModal(false)}
                   disabled={isDeleting}
                   style={{
+                    width: "100%",
                     borderRadius: radius.pill,
-                    padding: `${spacing.md2}px ${spacing.lg}px`,
+                    padding: `${spacing.md}px ${spacing.lg}px`,
                     border: `1px solid ${Colors.border}`,
                     backgroundColor: Colors.neutral10,
                     color: Colors.text,
@@ -773,10 +784,8 @@ const ProfilePage: NextPage = () => {
           </div>
         )}
       </div>
-    </div>
+    </>
   )
 }
 
 export default ProfilePage
-
-

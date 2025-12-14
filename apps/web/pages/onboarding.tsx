@@ -96,29 +96,51 @@ const OnboardingPage: NextPage = () => {
 
   return (
     <OnboardingSplitLayout>
-      <div
-        style={{
-          maxWidth: 380,
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: spacing.xxxl,
-        }}
-      >
-        {/* Logo centered at top */}
-        <div
-          style={{
-            marginBottom: spacing.xl,
-          }}
-        >
+      <style>{`
+        .onboarding-content {
+          max-width: 380px;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 32px;
+        }
+        .onboarding-logo {
+          margin-bottom: 20px;
+        }
+        .onboarding-logo img {
+          height: 48px;
+          width: auto;
+        }
+        .onboarding-button-wrapper {
+          width: 100%;
+        }
+        @media (max-width: 768px) {
+          .onboarding-content {
+            max-width: 100%;
+            gap: 16px;
+          }
+          .onboarding-logo {
+            display: none;
+          }
+          .onboarding-button-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 24px;
+            padding-bottom: max(24px, env(safe-area-inset-bottom, 24px));
+            z-index: 10;
+            background: linear-gradient(transparent, rgba(0,0,0,0.3) 30%);
+          }
+        }
+      `}</style>
+      <div className="onboarding-content">
+        {/* Logo centered at top - hidden on mobile */}
+        <div className="onboarding-logo">
           <img
             src="/black-logo.png"
             alt="Deals Logo"
-            style={{
-              height: 48,
-              width: "auto",
-            }}
           />
         </div>
 
@@ -132,7 +154,7 @@ const OnboardingPage: NextPage = () => {
           <h1
             style={{
               fontSize: fontSizes.xxl,
-              fontWeight: fontWeights.bold,
+              fontWeight: fontWeights.semibold,
               color: Colors.text,
               marginBottom: spacing.sm,
               lineHeight: 1.3,
@@ -152,40 +174,14 @@ const OnboardingPage: NextPage = () => {
           </p>
         </div>
 
-        {/* Continue button - left aligned, contained width */}
-        <div style={{ width: "100%" }}>
-          <button
-            type="button"
-            onClick={handleNext}
-            disabled={loading}
-            style={{
-              borderRadius: radius.pill,
-              width: "100%",
-              padding: `${spacing.md2}px ${spacing.xxxl * 2}px`,
-              border: "none",
-              backgroundColor: loading ? Colors.neutral60 : Colors.neutral100,
-              color: Colors.white,
-              fontSize: fontSizes.sm,
-              fontWeight: fontWeights.semibold,
-              cursor: loading ? "not-allowed" : "pointer",
-              fontFamily: "inherit",
-            }}
-          >
-            {loading
-              ? "Completing..."
-              : currentIndex === slides.length - 1
-                ? "Get Started"
-                : "Continue"}
-          </button>
-        </div>
-
-        {/* Dots indicator - centered */}
+        {/* Dots indicator - centered on mobile */}
         <div
           style={{
             display: "flex",
             justifyContent: "center",
             gap: 8,
             width: "100%",
+            marginTop: spacing.md,
           }}
         >
           {slides.map((_, index) => (
@@ -200,6 +196,33 @@ const OnboardingPage: NextPage = () => {
               }}
             />
           ))}
+        </div>
+
+        {/* Continue button - fixed at bottom on mobile */}
+        <div className="onboarding-button-wrapper">
+          <button
+            type="button"
+            onClick={handleNext}
+            disabled={loading}
+            style={{
+              borderRadius: radius.pill,
+              width: "100%",
+              padding: `${spacing.md2}px ${spacing.xxxl * 2}px`,
+              border: "none",
+              backgroundColor: loading ? Colors.neutral60 : Colors.neutral100,
+              color: Colors.white,
+              fontSize: fontSizes.sm,
+              fontWeight: fontWeights.regular,
+              cursor: loading ? "not-allowed" : "pointer",
+              fontFamily: "inherit",
+            }}
+          >
+            {loading
+              ? "Completing..."
+              : currentIndex === slides.length - 1
+                ? "Get Started"
+                : "Continue"}
+          </button>
         </div>
       </div>
     </OnboardingSplitLayout>

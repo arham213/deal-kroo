@@ -70,7 +70,7 @@ export default function ResetPasswordPage() {
         confirmPassword: false,
       })
 
-      router.push("/sign-in")
+      router.push("/auth/sign-in")
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Something went wrong. Please try again later"
@@ -153,11 +153,11 @@ export default function ResetPasswordPage() {
           paddingVertical: spacing.xxxl,
         }}
       >
-        <View style={{ marginBottom: spacing.xxl }}>
+        <View style={{ marginBottom: spacing.xxxxl }}>
           <Text
             style={{
               fontSize: fontSizes.xxl,
-              fontWeight: fontWeights.medium,
+              fontWeight: fontWeights.semibold,
               color: Colors.text,
               marginBottom: spacing.sm,
               textAlign: "center",
@@ -168,7 +168,7 @@ export default function ResetPasswordPage() {
           <Text
             style={{
               fontSize: fontSizes.base,
-              color: Colors.textSecondary,
+              color: Colors.neutral100,
               textAlign: "center",
             }}
           >
@@ -176,7 +176,7 @@ export default function ResetPasswordPage() {
           </Text>
         </View>
 
-        <View style={{ gap: spacing.xl }}>
+        <View style={{ gap: spacing.xxxl }}>
           <TextField
             label="New Password"
             placeholder="Enter new password"
@@ -220,7 +220,7 @@ export default function ResetPasswordPage() {
               style={{
                 fontSize: fontSizes.xs,
                 color: passwordChecks.length ? Colors.success2 : Colors.textSecondary,
-                fontWeight: passwordChecks.length ? fontWeights.bold : fontWeights.medium,
+                fontWeight: fontWeights.medium,
               }}
             >
               • At least 8 characters
@@ -229,7 +229,7 @@ export default function ResetPasswordPage() {
               style={{
                 fontSize: fontSizes.xs,
                 color: passwordChecks.uppercase ? Colors.success2 : Colors.textSecondary,
-                fontWeight: passwordChecks.uppercase ? fontWeights.bold : fontWeights.medium,
+                fontWeight: fontWeights.medium,
               }}
             >
               • Contains an uppercase letter
@@ -238,7 +238,7 @@ export default function ResetPasswordPage() {
               style={{
                 fontSize: fontSizes.xs,
                 color: passwordChecks.lowercase ? Colors.success2 : Colors.textSecondary,
-                fontWeight: passwordChecks.lowercase ? fontWeights.bold : fontWeights.medium,
+                fontWeight: fontWeights.medium,
               }}
             >
               • Contains a lowercase letter
@@ -247,7 +247,7 @@ export default function ResetPasswordPage() {
               style={{
                 fontSize: fontSizes.xs,
                 color: passwordChecks.number ? Colors.success2 : Colors.textSecondary,
-                fontWeight: passwordChecks.number ? fontWeights.bold : fontWeights.medium,
+                fontWeight: fontWeights.medium,
               }}
             >
               • Contains a number
@@ -256,7 +256,7 @@ export default function ResetPasswordPage() {
               style={{
                 fontSize: fontSizes.xs,
                 color: passwordChecks.match ? Colors.success2 : Colors.textSecondary,
-                fontWeight: passwordChecks.match ? fontWeights.bold : fontWeights.medium,
+                fontWeight: fontWeights.medium,
               }}
             >
               • Passwords match
@@ -270,9 +270,10 @@ export default function ResetPasswordPage() {
           </Text>
         ) : null}
 
-        <View style={{ marginTop: spacing.xxl }}>
+        <View style={{ marginTop: spacing.xxxl }}>
           <Button
             title="Reset Password"
+            loadingTitle="Resetting..."
             onPress={handleResetPassword}
             loading={loading}
             disabled={isSubmitDisabled}

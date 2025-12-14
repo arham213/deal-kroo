@@ -131,7 +131,7 @@ export default function PropertyCardWeb({
                     <span
                         style={{
                             fontSize: fontSizes.sm,
-                            fontWeight: fontWeights.medium,
+                            fontWeight: fontWeights.regular,
                             color: Colors.neutral80,
                         }}
                     >
@@ -191,7 +191,7 @@ export default function PropertyCardWeb({
                     <span
                         style={{
                             fontSize: fontSizes.xs,
-                            fontWeight: fontWeights.medium,
+                            fontWeight: fontWeights.regular,
                             color: property.possession ? Colors.textPossession : Colors.textNonPossession,
                         }}
                     >
@@ -234,7 +234,7 @@ export default function PropertyCardWeb({
                             <h2
                                 style={{
                                     fontSize: fontSizes.base,
-                                    fontWeight: fontWeights.bold,
+                                    fontWeight: fontWeights.semibold,
                                     color: Colors.black,
                                     margin: 0,
                                 }}
@@ -372,7 +372,7 @@ export default function PropertyCardWeb({
                                     style={{
                                         fontSize: fontSizes.sm,
                                         color: Colors.neutral100,
-                                        fontWeight: fontWeights.semibold,
+                                        fontWeight: fontWeights.medium,
                                     }}
                                 >
                                     {displayName}
@@ -405,7 +405,7 @@ export default function PropertyCardWeb({
                         <span
                             style={{
                                 fontSize: fontSizes.xs,
-                                fontWeight: fontWeights.medium,
+                                fontWeight: fontWeights.regular,
                                 color:
                                     property.listingType === "cash"
                                         ? Colors.textCash

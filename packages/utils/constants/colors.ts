@@ -20,7 +20,7 @@ export const Colors = {
   black: "#000000",
   white: "#ffffff",
   border: "#e0e0e0",
-  placeholder: "#999999",
+  placeholder: "#757575",
   inputBackground: "#fff",
   error: "#ff383c",
   success: "#E1F9E5",

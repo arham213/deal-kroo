@@ -1,5 +1,8 @@
+import Link from "next/link"
 import { Header } from "../components/common/header"
 import { Footer } from "../components/common/footer"
+import { Colors } from "@repo/utils/constants/colors"
+import { fontSizes, fontWeights, spacing, radius } from "@repo/utils/styles/tokens"
 
 export const metadata = {
     title: "Privacy Policy | Deal Kroo",
@@ -7,44 +10,87 @@ export const metadata = {
 }
 
 export default function PrivacyPolicyPage() {
+    const sectionStyle = {
+        marginBottom: spacing.xxxl,
+    }
+
+    const h2Style = {
+        fontSize: fontSizes.xl,
+        fontWeight: fontWeights.semibold,
+        color: Colors.text,
+        marginBottom: spacing.lg,
+    }
+
+    const h3Style = {
+        fontSize: fontSizes.md,
+        fontWeight: fontWeights.medium,
+        color: Colors.text,
+        marginBottom: spacing.md,
+        marginTop: spacing.xxl,
+    }
+
+    const pStyle = {
+        fontSize: fontSizes.sm,
+        color: Colors.textSecondary,
+        marginBottom: spacing.lg,
+        lineHeight: 1.7,
+    }
+
+    const listStyle = {
+        paddingLeft: spacing.xxl,
+        color: Colors.textSecondary,
+        fontSize: fontSizes.sm,
+        lineHeight: 1.8,
+        listStyleType: "disc",
+    }
+
     return (
-        <div className="min-h-screen bg-background">
+        <div style={{ minHeight: "100vh", backgroundColor: Colors.neutral10 }}>
             <Header />
 
             {/* Content */}
-            <main className="container mx-auto px-4 py-16 max-w-4xl">
-                <h1 className="text-4xl md:text-5xl font-bold mb-4">Privacy Policy</h1>
-                <p className="text-muted-foreground mb-8">
+            <main style={{ maxWidth: 900, margin: "0 auto", padding: `${spacing.xxxxl}px ${spacing.xxl}px` }}>
+                <h1
+                    style={{
+                        fontSize: fontSizes.xxxl,
+                        fontWeight: fontWeights.bold,
+                        color: Colors.text,
+                        marginBottom: spacing.lg,
+                    }}
+                >
+                    Privacy Policy
+                </h1>
+                <p style={{ color: Colors.textSecondary, fontSize: fontSizes.sm, marginBottom: spacing.xxxl }}>
                     Last Updated: November 21, 2025
                 </p>
 
-                <div className="prose prose-gray dark:prose-invert max-w-none">
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4">1. Introduction</h2>
-                        <p className="text-muted-foreground mb-4 leading-relaxed">
+                <div>
+                    <section style={sectionStyle}>
+                        <h2 style={h2Style}>1. Introduction</h2>
+                        <p style={pStyle}>
                             Welcome to Deal Kroo ("we," "our," or "us"). We are committed to protecting your privacy and ensuring the
                             security of your personal information. This Privacy Policy explains how we collect, use, disclose, and
                             safeguard your information when you use our mobile application and web platform (collectively, the
                             "Services").
                         </p>
-                        <p className="text-muted-foreground mb-4 leading-relaxed">
+                        <p style={pStyle}>
                             Deal Kroo is a dealer-to-dealer platform that enables real estate professionals to publish property
                             listings and discover available properties from other verified dealers in one centralized location.
                         </p>
-                        <p className="text-muted-foreground leading-relaxed">
+                        <p style={pStyle}>
                             By using Deal Kroo, you agree to the collection and use of information in accordance with this Privacy
                             Policy. If you do not agree with our policies and practices, please do not use our Services.
                         </p>
                     </section>
 
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4">2. Information We Collect</h2>
+                    <section style={sectionStyle}>
+                        <h2 style={h2Style}>2. Information We Collect</h2>
 
-                        <h3 className="text-xl font-semibold mb-3 mt-6">2.1 Personal Information</h3>
-                        <p className="text-muted-foreground mb-3 leading-relaxed">
+                        <h3 style={h3Style}>2.1 Personal Information</h3>
+                        <p style={pStyle}>
                             We collect information that you provide directly to us when registering as a dealer, including:
                         </p>
-                        <ul className="list-disc pl-6 text-muted-foreground space-y-2 mb-4">
+                        <ul style={listStyle}>
                             <li>Full name</li>
                             <li>Contact number (phone number)</li>
                             <li>Email address</li>
@@ -52,36 +98,36 @@ export default function PrivacyPolicyPage() {
                             <li>Password (encrypted and securely stored)</li>
                         </ul>
 
-                        <h3 className="text-xl font-semibold mb-3 mt-6">2.2 Property Listing Information</h3>
-                        <p className="text-muted-foreground mb-3 leading-relaxed">
+                        <h3 style={h3Style}>2.2 Property Listing Information</h3>
+                        <p style={pStyle}>
                             When you use our Services to publish or search for property listings, we collect:
                         </p>
-                        <ul className="list-disc pl-6 text-muted-foreground space-y-2 mb-4">
+                        <ul style={listStyle}>
                             <li>Property details (location, area, price, contact number)</li>
                             <li>Property description</li>
                             <li>Listing preferences (sale, installment plans)</li>
                         </ul>
 
-                        <h3 className="text-xl font-semibold mb-3 mt-6">2.3 Device Information</h3>
-                        <p className="text-muted-foreground mb-3 leading-relaxed">
+                        <h3 style={h3Style}>2.3 Device Information</h3>
+                        <p style={pStyle}>
                             We automatically collect limited device information when you use our Services:
                         </p>
-                        <ul className="list-disc pl-6 text-muted-foreground space-y-2 mb-4">
+                        <ul style={listStyle}>
                             <li>Device type (to optimize app display and functionality)</li>
                             <li>Operating system version (for compatibility purposes)</li>
                         </ul>
-                        <p className="text-muted-foreground leading-relaxed">
+                        <p style={pStyle}>
                             We do not collect or store detailed device identifiers, location data, browsing history, or other
                             extensive tracking information.
                         </p>
                     </section>
 
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4">3. How We Use Your Information</h2>
-                        <p className="text-muted-foreground mb-3 leading-relaxed">
+                    <section style={sectionStyle}>
+                        <h2 style={h2Style}>3. How We Use Your Information</h2>
+                        <p style={pStyle}>
                             We use the collected information for various purposes:
                         </p>
-                        <ul className="list-disc pl-6 text-muted-foreground space-y-2">
+                        <ul style={listStyle}>
                             <li>To provide, maintain, and improve our dealer-to-dealer platform</li>
                             <li>To create and manage your dealer account</li>
                             <li>To enable you to publish and manage property listings</li>
@@ -96,65 +142,65 @@ export default function PrivacyPolicyPage() {
                         </ul>
                     </section>
 
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4">4. Information Sharing and Disclosure</h2>
-                        <p className="text-muted-foreground mb-3 leading-relaxed">
+                    <section style={sectionStyle}>
+                        <h2 style={h2Style}>4. Information Sharing and Disclosure</h2>
+                        <p style={pStyle}>
                             We may share your information in the following circumstances:
                         </p>
 
-                        <h3 className="text-xl font-semibold mb-3 mt-6">4.1 With Other Dealers</h3>
-                        <p className="text-muted-foreground mb-4 leading-relaxed">
+                        <h3 style={h3Style}>4.1 With Other Dealers</h3>
+                        <p style={pStyle}>
                             When you publish a property listing on Deal Kroo, certain information (such as your dealership name,
                             contact details, and property information) will be visible to other verified dealers on the platform to
                             facilitate property discovery and dealer-to-dealer communication.
                         </p>
 
-                        <h3 className="text-xl font-semibold mb-3 mt-6">4.2 Service Providers</h3>
-                        <p className="text-muted-foreground mb-4 leading-relaxed">
+                        <h3 style={h3Style}>4.2 Service Providers</h3>
+                        <p style={pStyle}>
                             We may share your information with trusted third-party service providers who perform services on our
                             behalf, such as cloud hosting, data analysis, SMS/email notifications, and technical support. These
                             providers are bound by confidentiality obligations.
                         </p>
 
-                        <h3 className="text-xl font-semibold mb-3 mt-6">4.3 Legal Requirements</h3>
-                        <p className="text-muted-foreground mb-4 leading-relaxed">
+                        <h3 style={h3Style}>4.3 Legal Requirements</h3>
+                        <p style={pStyle}>
                             We may disclose your information if required to do so by law or in response to valid requests by public
                             authorities (e.g., court orders, government agencies, or regulatory bodies).
                         </p>
 
-                        <h3 className="text-xl font-semibold mb-3 mt-6">4.4 Business Transfers</h3>
-                        <p className="text-muted-foreground mb-4 leading-relaxed">
+                        <h3 style={h3Style}>4.4 Business Transfers</h3>
+                        <p style={pStyle}>
                             In the event of a merger, acquisition, reorganization, or sale of assets, your information may be
                             transferred as part of that transaction. We will notify you of any such change in ownership or control.
                         </p>
                     </section>
 
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4">5. Data Security</h2>
-                        <p className="text-muted-foreground mb-3 leading-relaxed">
+                    <section style={sectionStyle}>
+                        <h2 style={h2Style}>5. Data Security</h2>
+                        <p style={pStyle}>
                             We implement appropriate technical and organizational security measures to protect your personal
                             information against unauthorized access, alteration, disclosure, or destruction. These measures include:
                         </p>
-                        <ul className="list-disc pl-6 text-muted-foreground space-y-2 mb-4">
+                        <ul style={listStyle}>
                             <li>Encryption of passwords in transit and at rest</li>
                             <li>Secure authentication mechanisms (OTP verification)</li>
                             <li>Regular security assessments and updates</li>
                             <li>Access controls</li>
                             <li>Secure backup and recovery procedures</li>
                         </ul>
-                        <p className="text-muted-foreground leading-relaxed">
+                        <p style={pStyle}>
                             However, no method of transmission over the internet or electronic storage is 100% secure. While we strive
                             to use commercially acceptable means to protect your information, we cannot guarantee its absolute
                             security.
                         </p>
                     </section>
 
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4">6. Your Rights and Choices</h2>
-                        <p className="text-muted-foreground mb-3 leading-relaxed">
+                    <section style={sectionStyle}>
+                        <h2 style={h2Style}>6. Your Rights and Choices</h2>
+                        <p style={pStyle}>
                             You have certain rights regarding your personal information:
                         </p>
-                        <ul className="list-disc pl-6 text-muted-foreground space-y-2 mb-4">
+                        <ul style={listStyle}>
                             <li>
                                 <strong>Access and Update:</strong> You can access and update your dealer account information at any
                                 time through the app settings.
@@ -175,14 +221,14 @@ export default function PrivacyPolicyPage() {
                         </ul>
                     </section>
 
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4">7. Data Retention and Deletion</h2>
-                        <p className="text-muted-foreground mb-4 leading-relaxed">
+                    <section style={sectionStyle}>
+                        <h2 style={h2Style}>7. Data Retention and Deletion</h2>
+                        <p style={pStyle}>
                             We retain your personal information for as long as your account is active or as needed to provide you with
                             our Services. We may also retain certain information as necessary to comply with legal obligations,
                             resolve disputes, and enforce our agreements.
                         </p>
-                        <p className="text-muted-foreground leading-relaxed">
+                        <p style={pStyle}>
                             <strong>Account Deletion:</strong> When you delete your account, we permanently delete all your personal
                             data and associated information from our systems. This includes your profile information, property
                             listings, communication history, and all other user-generated content. We do not retain any of your
@@ -190,9 +236,9 @@ export default function PrivacyPolicyPage() {
                         </p>
                     </section>
 
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4">8. Children's Privacy</h2>
-                        <p className="text-muted-foreground leading-relaxed">
+                    <section style={sectionStyle}>
+                        <h2 style={h2Style}>8. Children's Privacy</h2>
+                        <p style={pStyle}>
                             Our Services are intended for use by real estate professionals and are not designed for children under the
                             age of 18. We do not knowingly collect personal information from children. If you are a parent or guardian
                             and believe your child has provided us with personal information, please contact us, and we will delete
@@ -200,9 +246,9 @@ export default function PrivacyPolicyPage() {
                         </p>
                     </section>
 
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4">9. International Data Transfers</h2>
-                        <p className="text-muted-foreground leading-relaxed">
+                    <section style={sectionStyle}>
+                        <h2 style={h2Style}>9. International Data Transfers</h2>
+                        <p style={pStyle}>
                             Your information may be transferred to and maintained on servers located outside of your country or
                             region, where data protection laws may differ. By using our Services, you consent to the transfer of your
                             information to such locations. We take appropriate measures to ensure your data is protected in accordance
@@ -210,9 +256,9 @@ export default function PrivacyPolicyPage() {
                         </p>
                     </section>
 
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4">10. Changes to This Privacy Policy</h2>
-                        <p className="text-muted-foreground leading-relaxed">
+                    <section style={sectionStyle}>
+                        <h2 style={h2Style}>10. Changes to This Privacy Policy</h2>
+                        <p style={pStyle}>
                             We may update this Privacy Policy from time to time to reflect changes in our practices, legal
                             requirements, or for other operational reasons. We will notify you of any material changes by posting the
                             new Privacy Policy on this page and updating the "Last Updated" date. For significant changes, we may
@@ -221,44 +267,52 @@ export default function PrivacyPolicyPage() {
                         </p>
                     </section>
 
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4">11. Contact Us</h2>
-                        <p className="text-muted-foreground mb-4 leading-relaxed">
+                    <section style={sectionStyle}>
+                        <h2 style={h2Style}>11. Contact Us</h2>
+                        <p style={pStyle}>
                             If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices,
                             please contact us at:
                         </p>
-                        <div className="bg-muted p-6 rounded-lg">
-                            <p className="font-semibold mb-2">Deal Kroo Support Team</p>
-                            <p className="text-muted-foreground mb-1">
+                        <div
+                            style={{
+                                backgroundColor: Colors.neutral20,
+                                padding: spacing.xxl,
+                                borderRadius: radius.lg,
+                            }}
+                        >
+                            <p style={{ fontWeight: fontWeights.semibold, color: Colors.text, marginBottom: spacing.sm }}>
+                                Deal Kroo Support Team
+                            </p>
+                            <p style={{ color: Colors.textSecondary, fontSize: fontSizes.sm, marginBottom: spacing.xs }}>
                                 Email:{" "}
-                                <a href="mailto:dealkaroo1@gmail.com" className="hover:underline">
+                                <a href="mailto:dealkaroo1@gmail.com" style={{ color: Colors.text, textDecoration: "underline" }}>
                                     dealkaroo1@gmail.com
                                 </a>
                             </p>
-                            <p className="text-muted-foreground mb-1">
+                            <p style={{ color: Colors.textSecondary, fontSize: fontSizes.sm, marginBottom: spacing.xs }}>
                                 Phone:{" "}
-                                <a href="tel:+(92) 302 1666650" className="hover:underline">
+                                <a href="tel:+(92) 302 1666650" style={{ color: Colors.text, textDecoration: "underline" }}>
                                     +(92) 302 1666650
                                 </a>
                             </p>
-                            <p className="text-muted-foreground">
+                            <p style={{ color: Colors.textSecondary, fontSize: fontSizes.sm }}>
                                 We aim to respond to all privacy-related inquiries within 48 hours.
                             </p>
                         </div>
                     </section>
 
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4">12. Consent and Acceptance</h2>
-                        <p className="text-muted-foreground leading-relaxed">
+                    <section style={sectionStyle}>
+                        <h2 style={h2Style}>12. Consent and Acceptance</h2>
+                        <p style={pStyle}>
                             By using Deal Kroo, you acknowledge that you have read and understood this Privacy Policy and consent to
                             the collection, use, and disclosure of your information as described herein. If you do not agree with this
                             policy, please do not use our Services.
                         </p>
                     </section>
 
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4">13. App Store Compliance</h2>
-                        <p className="text-muted-foreground leading-relaxed">
+                    <section style={sectionStyle}>
+                        <h2 style={h2Style}>13. App Store Compliance</h2>
+                        <p style={pStyle}>
                             This Privacy Policy is designed to meet the requirements of the Google Play Store and Apple App Store. We
                             are committed to transparency in our data practices and compliance with all applicable app store policies
                             and data protection regulations.

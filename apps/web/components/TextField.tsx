@@ -22,7 +22,7 @@ export const TextField = ({
                 <Text
                     style={{
                         fontSize: fontSizes.sm,
-                        fontWeight: fontWeights.medium,
+                        fontWeight: fontWeights.regular,
                         color: Colors.text,
                     }}
                 >

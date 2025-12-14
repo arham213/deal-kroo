@@ -85,7 +85,7 @@ export default function VerifyOtpPage() {
         router.replace("/onboarding")
       } else {
         router.push({
-          pathname: "/reset-password",
+          pathname: "/auth/reset-password",
           query: { userId: result.userId },
         })
       }
@@ -188,7 +188,7 @@ export default function VerifyOtpPage() {
           paddingVertical: spacing.xxxl,
         }}
       >
-        <View style={{ marginBottom: spacing.xxl }}>
+        <View style={{ marginBottom: spacing.xxxxl }}>
           <Text
             style={{
               fontSize: fontSizes.xxl,
@@ -203,7 +203,7 @@ export default function VerifyOtpPage() {
           <Text
             style={{
               fontSize: fontSizes.base,
-              color: Colors.textSecondary,
+              color: Colors.neutral100,
               textAlign: "center",
             }}
           >
@@ -211,7 +211,7 @@ export default function VerifyOtpPage() {
           </Text>
         </View>
 
-        <View style={{ gap: spacing.lg }}>
+        <View style={{ gap: spacing.xxxl }}>
           <Text
             style={{
               fontSize: fontSizes.sm,
@@ -320,9 +320,10 @@ export default function VerifyOtpPage() {
             </button>
           </View>
 
-          <View style={{ marginTop: spacing.lg }}>
+          <View style={{ marginTop: spacing.xxxl }}>
             <Button
               title="Continue"
+              loadingTitle="Verifying..."
               onPress={handleVerifyOTP}
               loading={loading}
               disabled={isSubmitDisabled}

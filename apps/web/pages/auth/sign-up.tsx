@@ -134,7 +134,7 @@ export default function SignUpPage() {
       const { userId } = await signUpUser(requestBody)
 
       router.push({
-        pathname: "/verify-otp",
+        pathname: "/auth/verify-otp",
         query: { userId, isSignupOTP: "true" },
       })
     } catch (error) {
@@ -157,7 +157,7 @@ export default function SignUpPage() {
           paddingVertical: spacing.xxxl,
         }}
       >
-        <View style={{ marginBottom: spacing.xxl }}>
+        <View style={{ marginBottom: spacing.xxxxl }}>
           <Text
             style={{
               fontSize: fontSizes.xxl,
@@ -172,7 +172,7 @@ export default function SignUpPage() {
           <Text
             style={{
               fontSize: fontSizes.base,
-              color: Colors.textSecondary,
+              color: Colors.neutral100,
               textAlign: "center",
             }}
           >
@@ -180,7 +180,7 @@ export default function SignUpPage() {
           </Text>
         </View>
 
-        <View style={{ gap: spacing.xl }}>
+        <View style={{ gap: spacing.xxxl }}>
           <TextField
             label="Full Name"
             placeholder="Type here"
@@ -239,9 +239,10 @@ export default function SignUpPage() {
           </Text>
         ) : null}
 
-        <View style={{ marginTop: spacing.xxl }}>
+        <View style={{ marginTop: spacing.xxxl }}>
           <Button
             title="Sign Up"
+            loadingTitle="Signing Up..."
             onPress={handleSignUp}
             loading={loading}
             disabled={isSubmitDisabled}
@@ -256,12 +257,12 @@ export default function SignUpPage() {
             marginTop: spacing.xl,
           }}
         >
-          <Text style={{ fontSize: fontSizes.sm, color: Colors.textSecondary }}>
+          <Text style={{ fontSize: fontSizes.sm, color: Colors.neutral80 }}>
             Already have an account?{" "}
           </Text>
           <button
             type="button"
-            onClick={() => router.push("/sign-in")}
+            onClick={() => router.push("/auth/sign-in")}
             style={{
               border: "none",
               backgroundColor: "transparent",

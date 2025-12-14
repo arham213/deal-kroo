@@ -136,7 +136,7 @@ export default function SignInPage() {
           paddingVertical: spacing.xxxl,
         }}
       >
-        <View style={{ marginBottom: spacing.xxl }}>
+        <View style={{ marginBottom: spacing.xxxxl }}>
           <Text
             style={{
               fontSize: fontSizes.xxl,
@@ -151,7 +151,7 @@ export default function SignInPage() {
           <Text
             style={{
               fontSize: fontSizes.base,
-              color: Colors.textSecondary,
+              color: Colors.neutral100,
               textAlign: "center",
             }}
           >
@@ -159,7 +159,7 @@ export default function SignInPage() {
           </Text>
         </View>
 
-        <View style={{ gap: spacing.xl }}>
+        <View style={{ gap: spacing.xxxl }}>
           <TextField
             label="Email"
             placeholder="Enter your email"
@@ -189,9 +189,10 @@ export default function SignInPage() {
           </Text>
         ) : null}
 
-        <View style={{ marginTop: spacing.xxl }}>
+        <View style={{ marginTop: spacing.xxxl }}>
           <Button
             title="Sign In"
+            loadingTitle="Signing In..."
             onPress={handleSignIn}
             loading={loading}
             disabled={isSubmitDisabled}
@@ -201,12 +202,12 @@ export default function SignInPage() {
         <View
           style={{
             alignItems: "center",
-            marginTop: spacing.lg,
+            marginTop: spacing.xxl,
           }}
         >
           <button
             type="button"
-            onClick={() => router.push("/forgot-password")}
+            onClick={() => router.push("/auth/forgot-password")}
             style={{
               border: "none",
               backgroundColor: "transparent",
@@ -227,10 +228,11 @@ export default function SignInPage() {
             flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
-            marginTop: spacing.lg,
+            marginTop: spacing.xl,
+            gap: spacing.xxs,
           }}
         >
-          <Text style={{ fontSize: fontSizes.sm, color: Colors.textSecondary }}>
+          <Text style={{ fontSize: fontSizes.sm, color: Colors.neutral80 }}>
             Don't have an account?{" "}
           </Text>
           <button

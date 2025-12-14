@@ -8,7 +8,7 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           <div>
             <Link href="/" className="inline-block mb-4">
-              <Image src="/images/white-logo.png" alt="Deal Kroo" width={140} height={47} className="h-10 w-auto" />
+              <Image src="/white-logo-web.png" alt="Deal Kroo" width={140} height={47} className="h-10 w-auto" />
             </Link>
             <p className="text-sm text-muted-foreground text-pretty">
               The dealer-to-dealer platform for property listings and discovery.

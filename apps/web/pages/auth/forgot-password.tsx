@@ -39,7 +39,7 @@ export default function ForgotPasswordPage() {
       setTouched(false)
 
       router.push({
-        pathname: "/verify-otp",
+        pathname: "/auth/verify-otp",
         query: { userId },
       })
     } catch (error) {
@@ -70,7 +70,7 @@ export default function ForgotPasswordPage() {
           paddingVertical: spacing.xxxl,
         }}
       >
-        <View style={{ marginBottom: spacing.xxl }}>
+        <View style={{ marginBottom: spacing.xxxxl }}>
           <Text
             style={{
               fontSize: fontSizes.xxl,
@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
           <Text
             style={{
               fontSize: fontSizes.base,
-              color: Colors.textSecondary,
+              color: Colors.neutral100,
               textAlign: "center",
             }}
           >
@@ -93,7 +93,7 @@ export default function ForgotPasswordPage() {
           </Text>
         </View>
 
-        <View style={{ gap: spacing.xl }}>
+        <View style={{ gap: spacing.xxxl }}>
           <TextField
             label="Email"
             placeholder="Enter your email"
@@ -113,9 +113,10 @@ export default function ForgotPasswordPage() {
           </Text>
         ) : null}
 
-        <View style={{ marginTop: spacing.xxl }}>
+        <View style={{ marginTop: spacing.xxxl }}>
           <Button
             title="Send OTP"
+            loadingTitle="Sending..."
             onPress={handleSendOTP}
             loading={loading}
             disabled={isSubmitDisabled}
@@ -130,7 +131,7 @@ export default function ForgotPasswordPage() {
         >
           <button
             type="button"
-            onClick={() => router.push("/sign-in")}
+            onClick={() => router.push("/auth/sign-in")}
             style={{
               border: "none",
               backgroundColor: "transparent",

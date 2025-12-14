@@ -34,17 +34,39 @@ export default function OnboardingSplitLayout({ children }: OnboardingSplitLayou
         .onboarding-right-bg {
           position: absolute;
           inset: 0;
-          background-image: url('/web-auth-screen-split-img.png');
+          background-image: url('/onboarding-screens-img.png');
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
         }
         @media (max-width: 768px) {
-          .onboarding-right-panel {
-            display: none !important;
+          .onboarding-layout {
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+            background-image: url('/web-auth-screen-split-img.png');
+            background-size: cover;
+            background-position: center bottom;
+            background-repeat: no-repeat;
           }
           .onboarding-left-panel {
-            padding: ${spacing.xl}px ${spacing.lg}px;
+            flex: none;
+            padding: ${spacing.xxxl}px ${spacing.xl}px ${spacing.xxl}px;
+            background-color: ${Colors.neutral10};
+            z-index: 2;
+            justify-content: flex-start;
+            align-items: stretch;
+            border-bottom-left-radius: 32px;
+            border-bottom-right-radius: 32px;
+            min-width: unset;
+          }
+          .onboarding-right-panel {
+            flex: 1;
+            display: block !important;
+            position: relative;
+          }
+          .onboarding-right-bg {
+            display: none;
           }
         }
       `}</style>
@@ -54,7 +76,7 @@ export default function OnboardingSplitLayout({ children }: OnboardingSplitLayou
           {children}
         </div>
 
-        {/* Right: image panel - hidden on mobile */}
+        {/* Right: image panel - visible on mobile too */}
         <div className="onboarding-right-panel">
           <div className="onboarding-right-bg" />
         </div>
@@ -62,3 +84,4 @@ export default function OnboardingSplitLayout({ children }: OnboardingSplitLayou
     </>
   )
 }
+
