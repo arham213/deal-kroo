@@ -294,7 +294,7 @@ export interface CreateListingParams {
 export const createListing = async ({
   token,
   payload,
-  baseUrl = "https://deal-karo-backend.vercel.app/api",
+  baseUrl = "https://api.dealkroo.com/api",
 }: CreateListingParams): Promise<void> => {
   try {
     const response = await axios.post(

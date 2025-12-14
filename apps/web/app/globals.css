@@ -1,14 +1,19 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 10 10 10;
+    --foreground: 237 237 237;
+    --primary: 34 197 94;
+    --primary-foreground: 255 255 255;
+    --muted: 38 38 38;
+    --muted-foreground: 163 163 163;
+    --card: 23 23 23;
+    --card-foreground: 237 237 237;
+    --border: 38 38 38;
+    --ring: 34 197 94;
   }
 }
 
@@ -19,8 +24,8 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: rgb(var(--foreground));
+  background: rgb(var(--background));
   font-family: "Montserrat", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
 }
@@ -29,6 +34,7 @@ body {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  font-family: "Montserrat", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
 }
 
 a {
@@ -48,7 +54,141 @@ a {
   .imgLight {
     display: none;
   }
+
   .imgDark {
     display: unset;
+  }
+}
+
+/* Form input placeholder styles */
+input::placeholder,
+textarea::placeholder {
+  color: #666666 !important;
+  opacity: 1;
+}
+
+select option:first-child {
+  color: #666666;
+}
+
+select option {
+  color: #000000;
+}
+
+/* Desktop layout (>1024px): Search in top row, filter chips in separate row */
+@media (min-width: 1025px) {
+  .listings-search-desktop {
+    display: flex !important;
+  }
+
+  .listings-search-mobile {
+    display: none !important;
+  }
+}
+
+/* Listings page responsive styles */
+/* Tablet (769px - 1024px): Search and filter chips on same row */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .listings-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .listings-search-desktop {
+    display: none !important;
+  }
+
+  .listings-search-mobile {
+    display: flex !important;
+  }
+
+  .listings-search-filter-row {
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 16px !important;
+  }
+
+  .listings-filter-chips {
+    margin-bottom: 0 !important;
+  }
+
+  .listings-search-section {
+    flex-shrink: 0 !important;
+  }
+}
+
+/* Mobile small - 570px to 768px: Show 2 cards */
+@media (min-width: 570px) and (max-width: 768px) {
+  .listings-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 570px) {
+  .listings-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .listings-search-desktop {
+    display: none !important;
+  }
+
+  .listings-search-mobile {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .listings-search-filter-row {
+    display: flex !important;
+    flex-direction: column-reverse !important;
+    gap: 16px !important;
+  }
+
+  .listings-top-row {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 20px !important;
+  }
+
+  .listings-greeting {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  .listings-search-section {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .listings-search-bar {
+    width: 100% !important;
+    min-width: unset !important;
+  }
+
+  .listings-add-btn {
+    width: 100% !important;
+  }
+
+  .listings-property-tabs {
+    width: auto !important;
+  }
+
+  .listings-greeting-avatar {
+    display: none !important;
+  }
+
+  .listings-filter-chips {
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .listings-main-content {
+    padding: 16px !important;
   }
 }

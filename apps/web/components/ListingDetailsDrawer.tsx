@@ -38,13 +38,12 @@ export default function ListingDetailsDrawer({
 }: ListingDetailsDrawerProps) {
   if (!isOpen || !listing) return null
 
-  const title = `${listing.area} ${
-    listing.propertyType === "house"
-      ? "House"
-      : listing.propertyType === "commercial plot"
-        ? "Commercial Plot"
-        : "Plot"
-  }`
+  const title = `${listing.area} ${listing.propertyType === "house"
+    ? "House"
+    : listing.propertyType === "commercial plot"
+      ? "Commercial Plot"
+      : "Plot"
+    }`
 
   const isPlot =
     listing.propertyType === "plot" || listing.propertyType === "commercial plot"
@@ -76,25 +75,29 @@ export default function ListingDetailsDrawer({
         display: "flex",
         justifyContent: "flex-end",
         backgroundColor: "rgba(0,0,0,0.24)",
+        borderBottomLeftRadius: "20px",
+        borderTopLeftRadius: "20px",
       }}
       onClick={onClose}
     >
       <aside
         style={{
-          width: 440,
+          width: 470,
           maxWidth: "100%",
           height: "100%",
           backgroundColor: Colors.neutral10,
           boxShadow: "-8px 0 40px rgba(15,23,42,0.20)",
           display: "flex",
           flexDirection: "column",
+          borderBottomLeftRadius: "20px",
+          borderTopLeftRadius: "20px",
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <header
           style={{
-            padding: spacing.lg,
+            padding: spacing.screen,
             paddingBottom: spacing.md,
             borderBottom: `1px solid ${Colors.neutral40}`,
             display: "flex",
@@ -105,7 +108,7 @@ export default function ListingDetailsDrawer({
           <span
             style={{
               fontSize: fontSizes.base,
-              fontWeight: fontWeights.bold,
+              fontWeight: fontWeights.semibold,
               color: Colors.neutral100,
             }}
           >
@@ -134,11 +137,21 @@ export default function ListingDetailsDrawer({
         </header>
 
         {/* Content */}
+        <style>{`
+          .listing-drawer-content::-webkit-scrollbar {
+            display: none;
+          }
+          .listing-drawer-content {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+        `}</style>
         <div
+          className="listing-drawer-content"
           style={{
             flex: 1,
             overflowY: "auto",
-            padding: spacing.lg,
+            padding: spacing.screen,
             paddingBottom: spacing.xl,
             display: "flex",
             flexDirection: "column",
@@ -189,9 +202,8 @@ export default function ListingDetailsDrawer({
             )}
             <DetailRow
               label="Address"
-              value={`${isPlot ? listing.plotNo || "---" : listing.houseNo || "---"}, ${
-                listing.block || "---"
-              }, ${listing.phase || "---"}`}
+              value={`${isPlot ? listing.plotNo || "---" : listing.houseNo || "---"}, ${listing.block || "---"
+                }, ${listing.phase || "---"}`}
             />
             <DetailRow label="Additional Area (Sq/ft)" value={listing.additionalArea || "---"} />
             <DetailRow
@@ -215,11 +227,12 @@ export default function ListingDetailsDrawer({
         {/* Footer buttons */}
         <div
           style={{
-            padding: spacing.lg,
+            padding: spacing.screen,
             borderTop: `1px solid ${Colors.neutral40}`,
             display: "flex",
             gap: spacing.sm,
             backgroundColor: Colors.neutral10,
+            borderBottomLeftRadius: "20px",
           }}
         >
           <button
@@ -227,12 +240,12 @@ export default function ListingDetailsDrawer({
             onClick={onClose}
             style={{
               flex: 1,
-              padding: `${spacing.md}px ${spacing.lg}px`,
+              padding: `${spacing.sm2}px ${spacing.lg}px`,
               borderRadius: radius.pill,
               border: `1px solid ${Colors.neutral50}`,
               backgroundColor: Colors.neutral20,
               fontSize: fontSizes.sm,
-              fontWeight: fontWeights.medium,
+              fontWeight: fontWeights.regular,
               color: Colors.neutral90,
               cursor: "pointer",
             }}
@@ -244,12 +257,12 @@ export default function ListingDetailsDrawer({
             onClick={handleContact}
             style={{
               flex: 1,
-              padding: `${spacing.md}px ${spacing.lg}px`,
+              padding: `${spacing.sm2}px ${spacing.lg}px`,
               borderRadius: radius.pill,
               border: "none",
               backgroundColor: Colors.neutral90,
               fontSize: fontSizes.sm,
-              fontWeight: fontWeights.semibold,
+              fontWeight: fontWeights.regular,
               color: Colors.neutral10,
               cursor: listing.forContact ? "pointer" : "not-allowed",
               opacity: listing.forContact ? 1 : 0.6,
@@ -284,7 +297,7 @@ function DetailRow({ label, value }: DetailRowProps) {
         style={{
           flexBasis: "40%",
           fontSize: fontSizes.sm,
-          fontWeight: fontWeights.medium,
+          fontWeight: fontWeights.regular,
           color: Colors.black,
         }}
       >
@@ -295,7 +308,7 @@ function DetailRow({ label, value }: DetailRowProps) {
           flexBasis: "60%",
           textAlign: "right",
           fontSize: fontSizes.sm,
-          fontWeight: fontWeights.bold,
+          fontWeight: fontWeights.semibold,
           color: Colors.black,
           wordBreak: "break-word",
         }}

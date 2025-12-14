@@ -1,52 +1,16 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/router"
-import { ScrollView, Text, TextInput, View } from "react-native-web"
+import { ScrollView, Text, View } from "react-native-web"
 import { Colors } from "@repo/utils/constants/colors"
 import { fontSizes, fontWeights, radius, spacing } from "@repo/utils/styles/tokens"
 import { useAuthContext } from "../../contexts/AuthContext"
 import AuthSplitLayout from "../../components/AuthSplitLayout"
+import { Button } from "../../components/Button"
 import {
   OTP_LENGTH,
   resendOtp,
   verifyOtp,
 } from "@repo/utils/auth/verifyOtp"
-
-type LocalButtonProps = {
-  title: string
-  onPress: () => void
-  loading?: boolean
-  disabled?: boolean
-  style?: React.CSSProperties
-}
-
-const RNButton = ({ title, onPress, loading, disabled, style }: LocalButtonProps) => (
-  <button
-    type="button"
-    onClick={onPress}
-    disabled={disabled || loading}
-    style={{
-      marginTop: spacing.sm,
-      width: "100%",
-      borderRadius: radius.pill,
-      paddingTop: spacing.md2,
-      paddingBottom: spacing.md2,
-      border: "none",
-      cursor: disabled || loading ? "not-allowed" : "pointer",
-      opacity: disabled || loading ? 0.5 : 1,
-      backgroundColor: Colors.neutral100,
-      color: Colors.white,
-      fontSize: fontSizes.base,
-      fontWeight: fontWeights.semibold,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: spacing.sm,
-      ...(style || {}),
-    }}
-  >
-    {loading ? "Loading..." : title}
-  </button>
-)
 
 export default function VerifyOtpPage() {
   const router = useRouter()
@@ -56,11 +20,14 @@ export default function VerifyOtpPage() {
     isSignupOTP?: string
   }
 
-  const [otp, setOtp] = useState("")
+  const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""))
   const [loading, setLoading] = useState(false)
   const [resendTimer, setResendTimer] = useState(0)
   const [touched, setTouched] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null)
+
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
   useEffect(() => {
     setResendTimer(60)
@@ -77,9 +44,11 @@ export default function VerifyOtpPage() {
     return () => clearInterval(interval)
   }, [])
 
+  const otpString = useMemo(() => otp.join(""), [otp])
+
   const isOtpValidLength = useMemo(
-    () => otp.trim().length === OTP_LENGTH,
-    [otp],
+    () => otpString.length === OTP_LENGTH,
+    [otpString],
   )
 
   const showError = touched && !isOtpValidLength
@@ -104,11 +73,11 @@ export default function VerifyOtpPage() {
       const result = await verifyOtp({
         userId: String(userId),
         isSignupOtp: isSignupOTP === "true",
-        otpCode: otp.trim(),
+        otpCode: otpString,
       })
 
       setTouched(false)
-      setOtp("")
+      setOtp(Array(OTP_LENGTH).fill(""))
 
       if (result.type === "signup") {
         await setToken(result.token)
@@ -155,7 +124,7 @@ export default function VerifyOtpPage() {
         isSimpleOtp: false,
       })
 
-      setOtp("")
+      setOtp(Array(OTP_LENGTH).fill(""))
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Something went wrong. Please try again later"
@@ -165,30 +134,68 @@ export default function VerifyOtpPage() {
     }
   }
 
-  const handleOtpChange = (value: string) => {
-    // digits only, max OTP_LENGTH
-    const digits = value.replace(/\D/g, "").slice(0, OTP_LENGTH)
-    setOtp(digits)
+  const handleOtpChange = (index: number, value: string) => {
+    // Only allow single digit
+    const digit = value.replace(/\D/g, "").slice(-1)
+
+    const newOtp = [...otp]
+    newOtp[index] = digit
+    setOtp(newOtp)
+
+    // Auto-focus next input
+    if (digit && index < OTP_LENGTH - 1) {
+      inputRefs.current[index + 1]?.focus()
+    }
+  }
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus()
+    }
+  }
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault()
+    const pastedData = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, OTP_LENGTH)
+    const newOtp = [...otp]
+
+    for (let i = 0; i < pastedData.length; i++) {
+      const char = pastedData[i]
+      if (char !== undefined) {
+        newOtp[i] = char
+      }
+    }
+
+    setOtp(newOtp)
+
+    // Focus the next empty input or the last one
+    const nextEmptyIndex = newOtp.findIndex((val) => !val)
+    if (nextEmptyIndex !== -1) {
+      inputRefs.current[nextEmptyIndex]?.focus()
+    } else {
+      inputRefs.current[OTP_LENGTH - 1]?.focus()
+    }
   }
 
   return (
     <AuthSplitLayout>
       <ScrollView
         contentContainerStyle={{
-          maxWidth: 480,
+          maxWidth: 420,
           width: "100%",
           alignSelf: "center",
-          gap: spacing.xl,
+          paddingHorizontal: spacing.xl,
+          paddingVertical: spacing.xxxl,
         }}
       >
-        <View style={{ marginBottom: 16 }}>
+        <View style={{ marginBottom: spacing.xxl }}>
           <Text
             style={{
-              fontSize: fontSizes.xl,
-              fontWeight: fontWeights.bold,
+              fontSize: fontSizes.xxl,
+              fontWeight: fontWeights.semibold,
               color: Colors.text,
               marginBottom: spacing.sm,
-              textAlign: "left",
+              textAlign: "center",
             }}
           >
             Verify your email
@@ -197,76 +204,80 @@ export default function VerifyOtpPage() {
             style={{
               fontSize: fontSizes.base,
               color: Colors.textSecondary,
-              textAlign: "left",
+              textAlign: "center",
             }}
           >
-            An OTP has been sent to your registered email.
+            An OTP sent to your registered email.
           </Text>
         </View>
 
-        <View
-          style={{
-            backgroundColor: Colors.neutral10,
-            borderRadius: radius.xxl,
-            padding: spacing.xl,
-            shadowColor: Colors.black,
-            shadowOpacity: 0.06,
-            shadowRadius: 12,
-            shadowOffset: { width: 0, height: 4 },
-            gap: spacing.lg,
-          }}
-        >
-          <View style={{ gap: spacing.md }}>
+        <View style={{ gap: spacing.lg }}>
+          <Text
+            style={{
+              fontSize: fontSizes.sm,
+              fontWeight: fontWeights.semibold,
+              color: Colors.text,
+            }}
+          >
+            Enter OTP here
+          </Text>
+
+          {/* OTP Input Boxes */}
+          <View
+            style={{
+              flexDirection: "row",
+              gap: spacing.md,
+              justifyContent: "center",
+            }}
+          >
+            {Array.from({ length: OTP_LENGTH }).map((_, index) => (
+              <input
+                key={index}
+                ref={(el) => { inputRefs.current[index] = el }}
+                type="text"
+                inputMode="numeric"
+                maxLength={1}
+                value={otp[index]}
+                onChange={(e) => handleOtpChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                onPaste={handlePaste}
+                onFocus={() => setFocusedIndex(index)}
+                onBlur={() => setFocusedIndex(null)}
+                disabled={loading}
+                style={{
+                  width: 72,
+                  height: 56,
+                  border: `1px solid ${showError ? Colors.error : Colors.border}`,
+                  borderRadius: radius.md,
+                  fontSize: fontSizes.lg,
+                  fontWeight: fontWeights.semibold,
+                  textAlign: "center",
+                  color: Colors.text,
+                  backgroundColor: Colors.inputBackground,
+                  outline: "none",
+                  fontFamily: "inherit",
+                }}
+                placeholder={focusedIndex === index ? "" : "-"}
+              />
+            ))}
+          </View>
+
+          {showError ? (
             <Text
               style={{
-                fontSize: fontSizes.sm,
-                fontWeight: fontWeights.semibold,
-                color: Colors.text,
-                marginBottom: spacing.xs,
+                fontSize: fontSizes.xs,
+                color: Colors.error,
               }}
             >
-              Enter OTP here
+              Enter the {OTP_LENGTH}-digit code sent to your number
             </Text>
-            <TextInput
-              style={{
-                borderWidth: 1,
-                borderColor: showError ? Colors.error : Colors.border,
-                borderRadius: radius.md,
-                paddingHorizontal: spacing.md,
-                paddingVertical: spacing.sm2,
-                fontSize: fontSizes.lg,
-                letterSpacing: 8,
-                textAlign: "center",
-                color: Colors.text,
-                backgroundColor: Colors.inputBackground,
-              }}
-              keyboardType="number-pad"
-              placeholder={"•".repeat(OTP_LENGTH)}
-              value={otp}
-              onChangeText={handleOtpChange}
-              editable={!loading}
-              maxLength={OTP_LENGTH}
-            />
-            {showError ? (
-              <Text
-                style={{
-                  marginTop: spacing.xs,
-                  fontSize: fontSizes.xs,
-                  color: Colors.error,
-                  textAlign: "center",
-                }}
-              >
-                Enter the {OTP_LENGTH}-digit code sent to your email
-              </Text>
-            ) : null}
-          </View>
+          ) : null}
 
           {apiError ? (
             <Text
               style={{
                 fontSize: fontSizes.sm,
                 color: Colors.error,
-                textAlign: "center",
               }}
             >
               {apiError}
@@ -276,9 +287,8 @@ export default function VerifyOtpPage() {
           <View
             style={{
               flexDirection: "row",
-              justifyContent: "center",
               alignItems: "center",
-              marginVertical: 8,
+              marginTop: spacing.sm,
             }}
           >
             <Text
@@ -303,23 +313,23 @@ export default function VerifyOtpPage() {
                 fontWeight: fontWeights.semibold,
                 color: Colors.neutral100,
                 opacity: resendTimer === 0 && !loading ? 1 : 0.5,
+                fontFamily: "inherit",
               }}
             >
               {resendTimer > 0 ? `Re-Send (${resendTimer}s)` : "Re-Send"}
             </button>
           </View>
 
-          <RNButton
-            title="Continue"
-            onPress={handleVerifyOTP}
-            loading={loading}
-            disabled={isSubmitDisabled}
-            style={{ marginTop: 8 }}
-          />
+          <View style={{ marginTop: spacing.lg }}>
+            <Button
+              title="Continue"
+              onPress={handleVerifyOTP}
+              loading={loading}
+              disabled={isSubmitDisabled}
+            />
+          </View>
         </View>
       </ScrollView>
     </AuthSplitLayout>
   )
 }
-
-

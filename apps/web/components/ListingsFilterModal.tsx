@@ -19,69 +19,21 @@ const AREA_OPTIONS = ["3 Marla", "5 Marla", "10 Marla", "15 Marla", "1 Kanal", "
 const AREA_TYPE_OPTIONS = ["Marla", "Kanal"]
 
 const RESEDENTIAL_BLOCKS = [
-  "A block",
-  "A-ext block",
-  "B block",
-  "C block",
-  "C-ext block",
-  "D block",
-  "D-ext block",
-  "E block",
-  "F block",
-  "G block",
-  "H block",
-  "I block",
-  "J block",
-  "J-ext block",
-  "J-1 block",
-  "K block",
-  "L block",
-  "M block",
-  "N block",
-  "N-ext block",
-  "O block",
-  "P block",
-  "Q block",
-  "Q-ext block",
-  "R block",
-  "R-ext block",
-  "Overseas Zone 1",
-  "Overseas Zone 2",
-  "Overseas Zone 3",
-  "Overseas Zone 4",
-  "Overseas Zone 5",
+  "A block", "A-ext block", "B block", "C block", "C-ext block", "D block", "D-ext block",
+  "E block", "F block", "G block", "H block", "I block", "J block", "J-ext block", "J-1 block",
+  "K block", "L block", "M block", "N block", "N-ext block", "O block", "P block", "Q block",
+  "Q-ext block", "R block", "R-ext block", "Overseas Zone 1", "Overseas Zone 2", "Overseas Zone 3",
+  "Overseas Zone 4", "Overseas Zone 5",
 ]
 
 const COMMERCIAL_BLOCKS = [
-  "A block Market",
-  "A2 Commercial",
-  "B block market",
-  "C block market",
-  "C2 commercial",
-  "D block commercial",
-  "F block commercial",
-  "F block D-shape commercial",
-  "I block commercial",
-  "J block commercial",
-  "J-1 block commercial",
-  "L block commercial",
-  "L block D-shape commercial",
-  "M block commercial",
-  "N block commercial",
-  "N-ext block commercial",
-  "O block commercial",
-  "P commercial zone",
-  "P commercial shop",
-  "R commercial",
-  "R1 commercial",
-  "R2 commercial",
-  "R-ext commercial",
-  "Hassan Commercial",
-  "Joyland",
-  "Overseas commercial zone 1",
-  "Overseas commercial zone 2",
-  "Overseas commercial zone 3",
-  "Overseas commercial zone 4",
+  "A block Market", "A2 Commercial", "B block market", "C block market", "C2 commercial",
+  "D block commercial", "F block commercial", "F block D-shape commercial", "I block commercial",
+  "J block commercial", "J-1 block commercial", "L block commercial", "L block D-shape commercial",
+  "M block commercial", "N block commercial", "N-ext block commercial", "O block commercial",
+  "P commercial zone", "P commercial shop", "R commercial", "R1 commercial", "R2 commercial",
+  "R-ext commercial", "Hassan Commercial", "Joyland", "Overseas commercial zone 1",
+  "Overseas commercial zone 2", "Overseas commercial zone 3", "Overseas commercial zone 4",
   "Overseas commercial zone 5",
 ]
 
@@ -102,6 +54,7 @@ export default function ListingsFilterModal({
   const [customAreaValue, setCustomAreaValue] = useState("")
   const [customAreaType, setCustomAreaType] = useState<string>("Marla")
   const [customAreaError, setCustomAreaError] = useState<string | undefined>(undefined)
+  const [customAreaOpen, setCustomAreaOpen] = useState(false)
 
   const blockOptions = useMemo(
     () => (propertyType === "Commercial Plots" ? COMMERCIAL_BLOCKS : RESEDENTIAL_BLOCKS),
@@ -109,6 +62,27 @@ export default function ListingsFilterModal({
   )
 
   if (!isOpen) return null
+
+  const inputStyle = {
+    width: "100%",
+    borderRadius: radius.pill,
+    border: `1px solid ${Colors.border}`,
+    padding: `${spacing.sm}px ${spacing.lg}px`,
+    fontSize: fontSizes.sm,
+    color: Colors.text,
+    backgroundColor: Colors.inputBackground,
+    outline: "none",
+  }
+
+  const selectStyle = {
+    ...inputStyle,
+    appearance: "none" as const,
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "right 16px center",
+    paddingRight: spacing.xxl,
+    cursor: "pointer",
+  }
 
   const computePriceErrors = (min: string, max: string) => {
     const validation: { minPrice?: string; maxPrice?: string } = {}
@@ -173,21 +147,28 @@ export default function ListingsFilterModal({
 
   const handleAreaSelect = (area: string) => {
     if (area === "Custom") {
-      if (!customAreaValue.trim()) {
-        setCustomAreaError("Area value is required")
-        return
-      }
-      if (!/^\d+(\.\d+)?$/.test(customAreaValue.trim())) {
-        setCustomAreaError("Area value must be numeric")
-        return
-      }
-      const customArea = `${customAreaValue.trim()} ${customAreaType}`
-      setSelectedArea(customArea)
       setCustomAreaError(undefined)
+      setCustomAreaOpen(true)
     } else {
       setSelectedArea(area)
       setCustomAreaError(undefined)
+      setCustomAreaOpen(false)
     }
+  }
+
+  const handleCustomAreaSave = () => {
+    if (!customAreaValue.trim()) {
+      setCustomAreaError("Area value is required")
+      return
+    }
+    if (!/^\d+(\.\d+)?$/.test(customAreaValue.trim())) {
+      setCustomAreaError("Area value must be numeric")
+      return
+    }
+    const customArea = `${customAreaValue.trim()} ${customAreaType}`
+    setSelectedArea(customArea)
+    setCustomAreaError(undefined)
+    setCustomAreaOpen(false)
   }
 
   const handleApplyFilters = () => {
@@ -221,6 +202,7 @@ export default function ListingsFilterModal({
     setMaxPrice("")
     setCustomAreaValue("")
     setCustomAreaType("Marla")
+    setCustomAreaOpen(false)
     setErrors({})
     setTouched({ minPrice: false, maxPrice: false })
     setCustomAreaError(undefined)
@@ -229,458 +211,454 @@ export default function ListingsFilterModal({
   }
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        backgroundColor: "rgba(0,0,0,0.4)",
-        zIndex: 60,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: spacing.lg,
-      }}
-      onClick={onClose}
-    >
+    <>
+      <style>{`
+        .filters-modal-overlay {
+          position: fixed;
+          inset: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          backdrop-filter: blur(4px);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1000;
+          padding: 24px;
+        }
+        .filters-modal-content {
+          width: 100%;
+          max-width: 640px;
+          max-height: 90vh;
+          overflow-y: auto;
+          overflow-x: hidden;
+          background-color: ${Colors.neutral10};
+          border-radius: 24px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          scroll-behavior: smooth;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          display: flex;
+          flex-direction: column;
+        }
+        .filters-modal-content::-webkit-scrollbar {
+          display: none;
+        }
+        .filters-modal-content input::placeholder,
+        .filters-modal-content select option:disabled {
+          color: #666 !important;
+        }
+        @media (max-width: 640px) {
+          .filters-modal-overlay {
+            padding: 16px;
+          }
+          .filters-modal-content {
+            border-radius: 16px;
+          }
+        }
+      `}</style>
       <div
-        style={{
-          width: "100%",
-          maxWidth: 520,
-          maxHeight: "90vh",
-          backgroundColor: Colors.neutral10,
-          borderRadius: radius.xxl,
-          boxShadow: "0 24px 60px rgba(15,23,42,0.35)",
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
+        className="filters-modal-overlay"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose()
         }}
-        onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <header
-          style={{
-            padding: `${spacing.lg}px ${spacing.xxl}px`,
-            borderBottom: `1px solid ${Colors.border}`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <span
+        <div className="filters-modal-content" onClick={(e) => e.stopPropagation()}>
+          {/* Header */}
+          <header
             style={{
-              fontSize: fontSizes.base,
-              fontWeight: fontWeights.bold,
-              color: Colors.neutral100,
+              padding: `${spacing.lg}px ${spacing.xl}px`,
+              borderBottom: `1px solid ${Colors.border}`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexShrink: 0,
             }}
           >
-            Filters
-          </span>
-          <button
-            type="button"
-            onClick={onClose}
-            style={{
-              border: "none",
-              background: "transparent",
-              cursor: "pointer",
-              fontSize: fontSizes.base,
-              color: Colors.text,
-            }}
-            aria-label="Close filters"
-          >
-            ✕
-          </button>
-        </header>
-
-        {/* Content */}
-        <div
-          style={{
-            padding: spacing.xxl,
-            overflowY: "auto",
-          }}
-        >
-          {/* Type of plot */}
-          <section
-            style={{
-              marginBottom: 24,
-            }}
-          >
-            <h3
+            <span
               style={{
-                fontSize: fontSizes.sm,
-                fontWeight: fontWeights.bold,
-                color: Colors.black,
-                marginBottom: spacing.sm,
+                fontSize: fontSizes.lg,
+                fontWeight: fontWeights.semibold,
+                color: Colors.text,
               }}
             >
-              Type of plot
-            </h3>
-            <div
+              Filters
+            </span>
+            <button
+              type="button"
+              onClick={onClose}
               style={{
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                border: "none",
+                backgroundColor: Colors.neutral10,
+                cursor: "pointer",
                 display: "flex",
-                gap: 12,
-                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "center",
               }}
+              aria-label="Close filters"
             >
-              {["On Cash", "On Installments"].map((type) => {
-                const isActive = typeOfPlot === type
-                return (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => setTypeOfPlot(type)}
-                    style={{
-                      padding: `${spacing.sm}px ${spacing.lg}px`,
-                      borderRadius: radius.lg2,
-                      border: `1px solid ${
-                        isActive ? Colors.neutral100 : Colors.neutral30
-                      }`,
-                      backgroundColor: isActive ? Colors.neutral100 : Colors.neutral10,
-                      color: isActive ? Colors.neutral10 : Colors.neutral100,
-                      fontSize: fontSizes.sm,
-                      fontWeight: fontWeights.medium,
-                      cursor: "pointer",
-                    }}
-                  >
-                    {type}
-                  </button>
-                )
-              })}
-            </div>
-          </section>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L13 13M1 13L13 1" stroke="#666666" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </header>
 
-          {/* Phase */}
-          <section
+          {/* Content */}
+          <div
             style={{
-              marginBottom: 24,
+              padding: spacing.xl,
+              flex: 1,
+              overflowY: "auto",
             }}
           >
-            <label
-              style={{
-                display: "block",
-                fontSize: fontSizes.sm,
-                fontWeight: fontWeights.bold,
-                color: Colors.black,
-                marginBottom: spacing.sm,
-              }}
-            >
-              Phase
-            </label>
-            <select
-              value={phase || ""}
-              onChange={(e) => setPhase(e.target.value || null)}
-              style={{
-                width: "100%",
-                padding: `${spacing.sm}px ${spacing.md}px`,
-                borderRadius: radius.lg,
-                border: `1px solid ${Colors.border}`,
-                backgroundColor: Colors.inputBackground,
-                fontSize: fontSizes.sm,
-              }}
-            >
-              <option value="">Select Phase</option>
-              <option value="Phase 2">Phase 2</option>
-            </select>
-          </section>
-
-          {/* Block */}
-          <section
-            style={{
-              marginBottom: 24,
-            }}
-          >
-            <label
-              style={{
-                display: "block",
-                fontSize: fontSizes.sm,
-                fontWeight: fontWeights.bold,
-                color: Colors.black,
-                marginBottom: spacing.sm,
-              }}
-            >
-              Block
-            </label>
-            <select
-              value={block || ""}
-              onChange={(e) => setBlock(e.target.value || null)}
-              style={{
-                width: "100%",
-                padding: `${spacing.sm}px ${spacing.md}px`,
-                borderRadius: radius.lg,
-                border: `1px solid ${Colors.border}`,
-                backgroundColor: Colors.inputBackground,
-                fontSize: fontSizes.sm,
-              }}
-            >
-              <option value="">Select Block</option>
-              {blockOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </section>
-
-          {/* Area */}
-          <section
-            style={{
-              marginBottom: 24,
-            }}
-          >
-            <h3
-              style={{
-                fontSize: fontSizes.sm,
-                fontWeight: fontWeights.bold,
-                color: Colors.black,
-                marginBottom: spacing.sm,
-              }}
-            >
-              Area
-            </h3>
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 10,
-              }}
-            >
-              {AREA_OPTIONS.map((area) => {
-                const isActive = selectedArea === area
-                return (
-                  <button
-                    key={area}
-                    type="button"
-                    onClick={() => handleAreaSelect(area)}
-                    style={{
-                      padding: `${spacing.sm}px ${spacing.lg}px`,
-                      borderRadius: radius.lg2,
-                      border: `1px solid ${
-                        isActive ? Colors.neutral100 : Colors.neutral30
-                      }`,
-                      backgroundColor: isActive ? Colors.neutral100 : Colors.neutral10,
-                      color: isActive ? Colors.neutral10 : Colors.neutral100,
-                      fontSize: fontSizes.sm,
-                      fontWeight: fontWeights.medium,
-                      cursor: "pointer",
-                    }}
-                  >
-                    {area}
-                  </button>
-                )
-              })}
-            </div>
-
-            {/* Custom area inline controls */}
-            <div
-              style={{
-                display: "flex",
-                gap: spacing.sm,
-                marginTop: spacing.md,
-                alignItems: "flex-start",
-              }}
-            >
-              <div style={{ flex: 1 }}>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: fontSizes.xs,
-                    fontWeight: fontWeights.medium,
-                    color: Colors.textSecondary,
-                    marginBottom: spacing.xxxs,
-                  }}
-                >
-                  Custom area value
-                </label>
-                <input
-                  type="text"
-                  value={customAreaValue}
-                  onChange={(e) => {
-                    setCustomAreaValue(e.target.value)
-                    if (customAreaError) setCustomAreaError(undefined)
-                  }}
-                  placeholder="e.g. 7"
-                  style={{
-                    width: "100%",
-                    padding: `${spacing.sm}px ${spacing.md}px`,
-                    borderRadius: radius.lg,
-                    border: `1px solid ${Colors.border}`,
-                    backgroundColor: Colors.inputBackground,
-                    fontSize: fontSizes.sm,
-                  }}
-                />
-              </div>
-              <div style={{ width: 140 }}>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: fontSizes.xs,
-                    fontWeight: fontWeights.medium,
-                    color: Colors.textSecondary,
-                    marginBottom: spacing.xxxs,
-                  }}
-                >
-                  Type
-                </label>
-                <select
-                  value={customAreaType}
-                  onChange={(e) => {
-                    setCustomAreaType(e.target.value)
-                    if (customAreaError) setCustomAreaError(undefined)
-                  }}
-                  style={{
-                    width: "100%",
-                    padding: `${spacing.sm}px ${spacing.md}px`,
-                    borderRadius: radius.lg,
-                    border: `1px solid ${Colors.border}`,
-                    backgroundColor: Colors.inputBackground,
-                    fontSize: fontSizes.sm,
-                  }}
-                >
-                  {AREA_TYPE_OPTIONS.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            {customAreaError && (
-              <p
+            {/* Type of plot */}
+            <section style={{ marginBottom: spacing.lg }}>
+              <label
                 style={{
-                  marginTop: spacing.xs,
-                  fontSize: fontSizes.xs,
-                  color: Colors.error,
+                  display: "block",
+                  marginBottom: spacing.sm,
+                  fontSize: fontSizes.sm,
+                  fontWeight: fontWeights.medium,
+                  color: Colors.text,
                 }}
               >
-                {customAreaError}
-              </p>
-            )}
-          </section>
+                Type of plot
+              </label>
+              <div style={{ display: "flex", gap: spacing.sm, flexWrap: "wrap" }}>
+                {["On Cash", "On Installments"].map((type) => {
+                  const isActive = typeOfPlot === type
+                  return (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setTypeOfPlot(type)}
+                      style={{
+                        padding: `${spacing.sm}px ${spacing.lg}px`,
+                        borderRadius: radius.pill,
+                        border: `1px solid ${Colors.border}`,
+                        backgroundColor: isActive ? Colors.neutral100 : Colors.neutral10,
+                        color: isActive ? Colors.neutral10 : Colors.text,
+                        fontSize: fontSizes.xs,
+                        fontWeight: isActive ? fontWeights.medium : fontWeights.medium,
+                        cursor: "pointer",
+                      }}
+                    >
+                      {type}
+                    </button>
+                  )
+                })}
+              </div>
+            </section>
 
-          {/* Price range */}
-          <section>
-            <h3
+            {/* Phase */}
+            <section style={{ marginBottom: spacing.lg }}>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: fontSizes.sm,
+                  fontWeight: fontWeights.medium,
+                  color: Colors.text,
+                  marginBottom: spacing.xs,
+                }}
+              >
+                Phase
+              </label>
+              <select
+                value={phase || ""}
+                onChange={(e) => setPhase(e.target.value || null)}
+                style={selectStyle}
+              >
+                <option value="" disabled style={{ color: "#666" }}>Select Phase</option>
+                <option value="Phase 2">Phase 2</option>
+              </select>
+            </section>
+
+            {/* Block */}
+            <section style={{ marginBottom: spacing.lg }}>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: fontSizes.sm,
+                  fontWeight: fontWeights.medium,
+                  color: Colors.text,
+                  marginBottom: spacing.xs,
+                }}
+              >
+                Block
+              </label>
+              <select
+                value={block || ""}
+                onChange={(e) => setBlock(e.target.value || null)}
+                style={selectStyle}
+              >
+                <option value="" disabled style={{ color: "#666" }}>Select Block</option>
+                {blockOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </section>
+
+            {/* Area */}
+            <section style={{ marginBottom: spacing.lg }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: spacing.sm,
+                  fontSize: fontSizes.sm,
+                  fontWeight: fontWeights.medium,
+                  color: Colors.text,
+                }}
+              >
+                Area
+              </label>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: spacing.xs }}>
+                {AREA_OPTIONS.map((area) => {
+                  const isCustomValue = !AREA_OPTIONS.includes(selectedArea)
+                  const isActive = customAreaOpen
+                    ? area === "Custom"
+                    : area === "Custom"
+                      ? isCustomValue
+                      : selectedArea === area
+                  return (
+                    <button
+                      key={area}
+                      type="button"
+                      onClick={() => handleAreaSelect(area)}
+                      style={{
+                        padding: `${spacing.xs}px ${spacing.md}px`,
+                        borderRadius: radius.pill,
+                        border: `1px solid ${Colors.border}`,
+                        backgroundColor: isActive ? Colors.neutral100 : Colors.neutral10,
+                        color: isActive ? Colors.neutral10 : Colors.text,
+                        fontSize: fontSizes.xs,
+                        fontWeight: isActive ? fontWeights.semibold : fontWeights.medium,
+                        cursor: "pointer",
+                      }}
+                    >
+                      {area}
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* Custom area controls - collapsible panel */}
+              {customAreaOpen && (
+                <div
+                  style={{
+                    marginTop: spacing.sm,
+                    padding: spacing.md,
+                    borderRadius: radius.lg,
+                    border: `1px solid ${Colors.border}`,
+                    backgroundColor: Colors.neutral10,
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: spacing.sm,
+                    alignItems: "flex-end",
+                  }}
+                >
+                  <div style={{ flex: 1, minWidth: 120 }}>
+                    <label
+                      style={{
+                        display: "block",
+                        marginBottom: spacing.xs,
+                        fontSize: fontSizes.xs,
+                        fontWeight: fontWeights.medium,
+                        color: Colors.text,
+                      }}
+                    >
+                      Area value
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter value"
+                      value={customAreaValue}
+                      onChange={(e) => {
+                        setCustomAreaValue(e.target.value)
+                        if (customAreaError) setCustomAreaError(undefined)
+                      }}
+                      style={inputStyle}
+                    />
+                    {customAreaError && (
+                      <p style={{ marginTop: spacing.xs, fontSize: fontSizes.xs, color: Colors.error }}>
+                        {customAreaError}
+                      </p>
+                    )}
+                  </div>
+                  <div style={{ minWidth: 100 }}>
+                    <label
+                      style={{
+                        display: "block",
+                        marginBottom: spacing.xs,
+                        fontSize: fontSizes.xs,
+                        fontWeight: fontWeights.medium,
+                        color: Colors.text,
+                      }}
+                    >
+                      Type
+                    </label>
+                    <select
+                      value={customAreaType}
+                      onChange={(e) => {
+                        setCustomAreaType(e.target.value)
+                        if (customAreaError) setCustomAreaError(undefined)
+                      }}
+                      style={selectStyle}
+                    >
+                      {AREA_TYPE_OPTIONS.map((type) => (
+                        <option key={type} value={type}>
+                          {type}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div style={{ display: "flex", gap: spacing.xs }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCustomAreaOpen(false)
+                        setCustomAreaError(undefined)
+                      }}
+                      style={{
+                        borderRadius: radius.pill,
+                        padding: `${spacing.xs}px ${spacing.md}px`,
+                        border: `1px solid ${Colors.border}`,
+                        backgroundColor: Colors.neutral10,
+                        color: Colors.text,
+                        fontSize: fontSizes.xs,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCustomAreaSave}
+                      style={{
+                        borderRadius: radius.pill,
+                        padding: `${spacing.xs}px ${spacing.md}px`,
+                        border: "none",
+                        backgroundColor: Colors.neutral100,
+                        color: Colors.neutral10,
+                        fontSize: fontSizes.xs,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+              )}
+            </section>
+
+            {/* Price range */}
+            <section>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: fontSizes.sm,
+                  fontWeight: fontWeights.medium,
+                  color: Colors.text,
+                  marginBottom: spacing.sm,
+                }}
+              >
+                Price Range
+              </label>
+              <div style={{ display: "flex", flexDirection: "column", gap: spacing.sm }}>
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Min Price"
+                    value={minPrice}
+                    onChange={(e) => handlePriceChange("minPrice")(e.target.value)}
+                    onBlur={handlePriceBlur("minPrice")}
+                    style={inputStyle}
+                  />
+                  {touched.minPrice && errors.minPrice && (
+                    <p
+                      style={{
+                        marginTop: spacing.xs,
+                        fontSize: fontSizes.xs,
+                        color: Colors.error,
+                      }}
+                    >
+                      {errors.minPrice}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Max Price"
+                    value={maxPrice}
+                    onChange={(e) => handlePriceChange("maxPrice")(e.target.value)}
+                    onBlur={handlePriceBlur("maxPrice")}
+                    style={inputStyle}
+                  />
+                  {touched.maxPrice && errors.maxPrice && (
+                    <p
+                      style={{
+                        marginTop: spacing.xs,
+                        fontSize: fontSizes.xs,
+                        color: Colors.error,
+                      }}
+                    >
+                      {errors.maxPrice}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Footer */}
+          <footer
+            style={{
+              display: "flex",
+              gap: spacing.sm,
+              padding: `${spacing.lg}px ${spacing.xl}px`,
+              borderTop: `1px solid ${Colors.border}`,
+              flexShrink: 0,
+            }}
+          >
+            <button
+              type="button"
+              onClick={handleClearFilters}
               style={{
+                padding: `${spacing.sm2}px ${spacing.lg}px`,
+                borderRadius: radius.pill,
+                border: `1px solid ${Colors.border}`,
+                backgroundColor: Colors.neutral10,
                 fontSize: fontSizes.sm,
-                fontWeight: fontWeights.bold,
-                color: Colors.black,
-                marginBottom: spacing.sm,
+                fontWeight: fontWeights.regular,
+                color: Colors.text,
+                cursor: "pointer",
               }}
             >
-              Price Range
-            </h3>
-            <div
+              Clear
+            </button>
+            <button
+              type="button"
+              onClick={handleApplyFilters}
               style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
+                flex: 1,
+                padding: `${spacing.sm2}px ${spacing.lg}px`,
+                borderRadius: radius.pill,
+                border: "none",
+                backgroundColor: Colors.neutral100,
+                fontSize: fontSizes.sm,
+                fontWeight: fontWeights.regular,
+                color: Colors.neutral10,
+                cursor: "pointer",
               }}
             >
-              <div>
-                <input
-                  type="text"
-                  placeholder="Min Price"
-                  value={minPrice}
-                  onChange={(e) => handlePriceChange("minPrice")(e.target.value)}
-                  onBlur={handlePriceBlur("minPrice")}
-                  style={{
-                    width: "100%",
-                    padding: `${spacing.sm}px ${spacing.md}px`,
-                    borderRadius: radius.lg,
-                    border: `1px solid ${Colors.border}`,
-                    backgroundColor: Colors.inputBackground,
-                    fontSize: fontSizes.sm,
-                  }}
-                />
-                {touched.minPrice && errors.minPrice && (
-                  <p
-                    style={{
-                      marginTop: spacing.xs,
-                      fontSize: fontSizes.xs,
-                      color: Colors.error,
-                    }}
-                  >
-                    {errors.minPrice}
-                  </p>
-                )}
-              </div>
-              <div>
-                <input
-                  type="text"
-                  placeholder="Max Price"
-                  value={maxPrice}
-                  onChange={(e) => handlePriceChange("maxPrice")(e.target.value)}
-                  onBlur={handlePriceBlur("maxPrice")}
-                  style={{
-                    width: "100%",
-                    padding: `${spacing.sm}px ${spacing.md}px`,
-                    borderRadius: radius.lg,
-                    border: `1px solid ${Colors.border}`,
-                    backgroundColor: Colors.inputBackground,
-                    fontSize: fontSizes.sm,
-                  }}
-                />
-                {touched.maxPrice && errors.maxPrice && (
-                  <p
-                    style={{
-                      marginTop: spacing.xs,
-                      fontSize: fontSizes.xs,
-                      color: Colors.error,
-                    }}
-                  >
-                    {errors.maxPrice}
-                  </p>
-                )}
-              </div>
-            </div>
-          </section>
+              Apply
+            </button>
+          </footer>
         </div>
-
-        {/* Footer */}
-        <footer
-          style={{
-            display: "flex",
-            gap: 12,
-            padding: `${spacing.md}px ${spacing.lg}px ${spacing.lg}px`,
-            borderTop: `1px solid ${Colors.border}`,
-          }}
-        >
-          <button
-            type="button"
-            onClick={handleClearFilters}
-            style={{
-              padding: `${spacing.sm}px ${spacing.lg}px`,
-              borderRadius: radius.pill,
-              border: `1px solid ${Colors.border}`,
-              backgroundColor: Colors.inputBackground,
-              fontSize: fontSizes.sm,
-              fontWeight: fontWeights.semibold,
-              color: Colors.text,
-              cursor: "pointer",
-            }}
-          >
-            Clear
-          </button>
-          <button
-            type="button"
-            onClick={handleApplyFilters}
-            style={{
-              flex: 1,
-              padding: `${spacing.sm}px ${spacing.lg}px`,
-              borderRadius: radius.pill,
-              border: "none",
-              backgroundColor: Colors.primary,
-              fontSize: fontSizes.sm,
-              fontWeight: fontWeights.semibold,
-              color: Colors.white,
-              cursor: "pointer",
-            }}
-          >
-            Apply
-          </button>
-        </footer>
       </div>
-    </div>
+    </>
   )
 }
-
-

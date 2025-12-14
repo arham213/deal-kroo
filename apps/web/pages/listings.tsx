@@ -9,14 +9,15 @@ import {
   type PropertyTypeTab,
 } from "@repo/utils/listings/listingsQuery"
 import type { ListingState } from "@repo/utils/types/listings"
-import { Colors } from "@repo/utils/constants/colors"
-import { fontSizes, fontWeights, radius, spacing } from "@repo/utils/styles/tokens"
 import PropertyCardWeb from "../components/PropertyCard"
 import ListingDetailsDrawer from "../components/ListingDetailsDrawer"
 import ListingsFilterModal from "../components/ListingsFilterModal"
+import AddListingModal from "../components/AddListingModal"
 import { useAuthContext } from "../contexts/AuthContext"
+import { LoggedInHeader } from "../components/common/LoggedInHeader"
+import { Colors } from "@repo/utils/constants/colors"
 
-const BASE_URL = "https://deal-karo-backend.vercel.app/api"
+const BASE_URL = "https://api.dealkroo.com/api"
 const PAGE_SIZE = parseInt(process.env.PAGINATION_LIMIT || "25", 10)
 
 const propertyTypeOptions: PropertyTypeTab[] = ["Plots", "Houses", "Commercial Plots"]
@@ -40,6 +41,7 @@ const ListingsPage: NextPage = () => {
   const [selectedListing, setSelectedListing] = useState<ListingState | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
+  const [isAddListingOpen, setIsAddListingOpen] = useState(false)
 
   const hasFilters = useMemo(
     () => Object.keys(filters || {}).length > 0 || activeFilter !== "All Listings",
@@ -130,11 +132,11 @@ const ListingsPage: NextPage = () => {
   const estateName = user?.estateName
   const initials = user?.name
     ? user.name
-        .split(" ")
-        .map((part) => part[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase()
     : "D"
 
   const handleOpenDetails = (listing: ListingState) => {
@@ -151,99 +153,70 @@ const ListingsPage: NextPage = () => {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: Colors.headerBackground,
-        padding: `${spacing.xxxl}px ${spacing.screen}px`,
-        display: "flex",
-        justifyContent: "center",
-      }}
-    >
+    <div style={{ minHeight: "100vh", backgroundColor: "#ffffff" }}>
+      {/* Logged-in Header */}
+      <LoggedInHeader />
+
+      {/* Main Content */}
       <div
+        className="listings-main-content"
         style={{
-          width: "100%",
           maxWidth: 1200,
-          backgroundColor: Colors.neutral10,
-          borderRadius: radius.xxl,
-          padding: spacing.xl,
-          boxShadow: "0 12px 40px rgba(15,23,42,0.25)",
-          display: "flex",
-          flexDirection: "column",
-          gap: spacing.xl,
+          margin: "0 auto",
+          padding: "24px",
         }}
       >
-        {/* Header */}
-        <header
+        {/* Top Row: User Greeting | Property Tabs | Search + Add New */}
+        <div
+          className="listings-top-row"
           style={{
             display: "flex",
-            justifyContent: "space-between",
             alignItems: "center",
-            gap: spacing.md,
+            justifyContent: "space-between",
+            gap: 24,
+            marginBottom: 24,
             flexWrap: "wrap",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: spacing.sm,
-              minWidth: 0,
-            }}
-          >
+          {/* User Greeting */}
+          <div className="listings-greeting" style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div
+              className="listings-greeting-avatar"
               style={{
-                width: 44,
-                height: 44,
-                borderRadius: radius.pill,
-                backgroundColor: Colors.neutral30,
+                width: 48,
+                height: 48,
+                borderRadius: "50%",
+                backgroundColor: "#f0f0f0",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: fontSizes.sm,
-                fontWeight: fontWeights.semibold,
-                color: Colors.text,
+                fontSize: 16,
+                fontWeight: 600,
+                color: "#333333",
               }}
             >
               {initials}
             </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: spacing.xxxs,
-              }}
-            >
-              <span
-                style={{
-                  fontSize: fontSizes.sm,
-                  fontWeight: fontWeights.semibold,
-                  color: Colors.text,
-                }}
-              >
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <span style={{ fontSize: 18, fontWeight: 600, color: "#000000" }}>
                 Hi, {firstName}
               </span>
               {estateName && (
-                <span
-                  style={{
-                    fontSize: fontSizes.xs,
-                    color: Colors.textSecondary,
-                  }}
-                >
+                <span style={{ fontSize: 14, color: "#666666" }}>
                   {estateName}
                 </span>
               )}
             </div>
           </div>
 
-          {/* Property type tabs */}
+          {/* Property Type Tabs */}
           <div
+            className="listings-property-tabs"
             style={{
               display: "inline-flex",
-              backgroundColor: Colors.neutral20,
-              borderRadius: radius.pill,
-              padding: spacing.xs,
-              gap: spacing.xs,
+              backgroundColor: "#f5f5f5",
+              borderRadius: 100,
+              padding: 4,
             }}
           >
             {propertyTypeOptions.map((type) => (
@@ -253,53 +226,38 @@ const ListingsPage: NextPage = () => {
                 onClick={() => setActivePropertyTab(type)}
                 style={{
                   border: "none",
-                  borderRadius: radius.pill,
-                  padding: `${spacing.xs}px ${spacing.md}px`,
-                  fontSize: fontSizes.xs,
+                  borderRadius: 100,
+                  padding: "10px 20px",
+                  fontSize: 14,
+                  fontWeight: activePropertyTab === type ? 400 : 400,
                   cursor: "pointer",
-                  backgroundColor:
-                    activePropertyTab === type ? Colors.neutral100 : "transparent",
-                  color: activePropertyTab === type ? Colors.neutral10 : Colors.text,
-                  fontWeight: activePropertyTab === type ? fontWeights.semibold : fontWeights.medium,
+                  backgroundColor: activePropertyTab === type ? "#000000" : "transparent",
+                  color: activePropertyTab === type ? "#ffffff" : "#333333",
+                  transition: "all 0.2s",
                 }}
               >
-                {type}
+                {type === "Commercial Plots" ? "Commercial" : type}
               </button>
             ))}
           </div>
 
-          {/* Search + Add New */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: spacing.sm,
-              minWidth: 260,
-              flex: 1,
-              justifyContent: "flex-end",
-            }}
-          >
+          {/* Search + Add New - in top row for desktop */}
+          <div className="listings-search-section listings-search-desktop" style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div
+              className="listings-search-bar"
               style={{
-                flex: 1,
-                maxWidth: 380,
                 display: "flex",
                 alignItems: "center",
-                padding: `${spacing.sm}px ${spacing.md}px`,
-                borderRadius: radius.pill,
-                border: "none",
-                backgroundColor: Colors.neutral20,
+                backgroundColor: "#f5f5f5",
+                borderRadius: 100,
+                padding: "10px 16px",
+                minWidth: 240,
               }}
             >
-              <span
-                style={{
-                  fontSize: fontSizes.base,
-                  color: Colors.textSecondary,
-                  marginRight: spacing.xs,
-                }}
-              >
-                🔍
-              </span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M7.66671 13.9997C11.1645 13.9997 14 11.1641 14 7.66634C14 4.16854 11.1645 1.33301 7.66671 1.33301C4.1689 1.33301 1.33337 4.16854 1.33337 7.66634C1.33337 11.1641 4.1689 13.9997 7.66671 13.9997Z" stroke="#292D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M14.6667 14.6663L13.3334 13.333" stroke="#292D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
               <input
                 type="text"
                 placeholder="Search"
@@ -309,8 +267,11 @@ const ListingsPage: NextPage = () => {
                   flex: 1,
                   border: "none",
                   outline: "none",
-                  fontSize: fontSizes.sm,
                   backgroundColor: "transparent",
+                  fontSize: 14,
+                  color: "#000",
+                  marginLeft: 8,
+                  width: 120,
                 }}
               />
               <button
@@ -322,48 +283,55 @@ const ListingsPage: NextPage = () => {
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
-                  color: Colors.textSecondary,
-                  fontSize: fontSizes.base,
-                  marginLeft: spacing.xs,
+                  padding: 4,
                 }}
                 aria-label="Open filters"
               >
-                ⚙
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <path d="M9 8.4375V15.1875" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M9 2.8125V6.1875" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M14.0625 14.0625V15.1875" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M14.0625 2.8125V11.8125" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M15.75 11.8125H12.375" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M3.9375 11.8125V15.1875" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M3.9375 2.8125V9.5625" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M2.25 9.5625H5.625" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M10.6875 6.1875H7.3125" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </button>
             </div>
             <button
+              className="listings-add-btn"
               type="button"
-              onClick={() => router.push("/add-listing")}
+              onClick={() => setIsAddListingOpen(true)}
               style={{
-                borderRadius: radius.pill,
-                padding: `${spacing.sm}px ${spacing.lg}px`,
+                borderRadius: 100,
+                padding: "12px 24px",
                 border: "none",
-                backgroundColor: Colors.neutral100,
-                color: Colors.neutral10,
-                fontSize: fontSizes.sm,
-                fontWeight: fontWeights.semibold,
+                backgroundColor: "#000000",
+                color: "#ffffff",
+                fontSize: 14,
+                fontWeight: 400,
                 cursor: "pointer",
+                whiteSpace: "nowrap",
               }}
             >
               Add New
             </button>
           </div>
-        </header>
+        </div>
 
-        {/* Filter row */}
+        {/* Filter Chips Row + Search on tablet/mobile */}
         <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: spacing.sm,
-            alignItems: "center",
-          }}
+          className="listings-search-filter-row"
+          style={{ marginBottom: 24 }}
         >
+          {/* Filter Chips */}
           <div
+            className="listings-filter-chips"
             style={{
               display: "flex",
-              gap: spacing.xs,
+              gap: 8,
               flexWrap: "wrap",
             }}
           >
@@ -373,91 +341,163 @@ const ListingsPage: NextPage = () => {
                 type="button"
                 onClick={() => setActiveFilter(tab)}
                 style={{
-                  borderRadius: radius.pill,
-                  padding: `${spacing.xs}px ${spacing.md}px`,
-                  border: `1px solid ${Colors.border}`,
-                  backgroundColor:
-                    activeFilter === tab ? Colors.neutral100 : Colors.neutral10,
-                  color: activeFilter === tab ? Colors.neutral10 : Colors.text,
-                  fontSize: fontSizes.xs,
-                  fontWeight: activeFilter === tab ? fontWeights.semibold : fontWeights.medium,
+                  borderRadius: 100,
+                  padding: "8px 18px",
+                  border: `1px solid ${Colors.neutral60}`,
+                  backgroundColor: activeFilter === tab ? Colors.neutral20 : "#ffffff",
+                  color: "#262626",
+                  fontSize: 13,
+                  fontWeight: activeFilter === tab ? 600 : 400,
                   cursor: "pointer",
+                  transition: "all 0.2s",
                 }}
               >
                 {tab}
               </button>
             ))}
+            {hasFilters && (
+              <button
+                type="button"
+                onClick={() => {
+                  setFilters({})
+                  setActiveFilter("All Listings")
+                }}
+                style={{
+                  border: "none",
+                  background: "none",
+                  color: "#22c55e",
+                  cursor: "pointer",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  padding: "8px 16px",
+                }}
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
+
+          {/* Search + Add New - shown on tablet/mobile only */}
+          <div className="listings-search-section listings-search-mobile" style={{ display: "none", alignItems: "center", gap: 12 }}>
+            <div
+              className="listings-search-bar"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                backgroundColor: "#f5f5f5",
+                borderRadius: 100,
+                padding: "10px 16px",
+                minWidth: 240,
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M7.66671 13.9997C11.1645 13.9997 14 11.1641 14 7.66634C14 4.16854 11.1645 1.33301 7.66671 1.33301C4.1689 1.33301 1.33337 4.16854 1.33337 7.66634C1.33337 11.1641 4.1689 13.9997 7.66671 13.9997Z" stroke="#292D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M14.6667 14.6663L13.3334 13.333" stroke="#292D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  flex: 1,
+                  border: "none",
+                  outline: "none",
+                  backgroundColor: "transparent",
+                  fontSize: 14,
+                  color: "#000",
+                  marginLeft: 8,
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setIsFilterModalOpen(true)}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  padding: 4,
+                }}
+                aria-label="Open filters"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <path d="M9 8.4375V15.1875" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M9 2.8125V6.1875" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M14.0625 14.0625V15.1875" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M14.0625 2.8125V11.8125" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M15.75 11.8125H12.375" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M3.9375 11.8125V15.1875" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M3.9375 2.8125V9.5625" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M2.25 9.5625H5.625" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M10.6875 6.1875H7.3125" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </div>
+            <button
+              className="listings-add-btn"
+              type="button"
+              onClick={() => setIsAddListingOpen(true)}
+              style={{
+                borderRadius: 100,
+                padding: "12px 24px",
+                border: "none",
+                backgroundColor: "#000000",
+                color: "#ffffff",
+                fontSize: 14,
+                fontWeight: 400,
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Add New
+            </button>
           </div>
         </div>
 
-        {/* Status row */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            fontSize: fontSizes.xs,
-            color: Colors.textSecondary,
-            flexWrap: "wrap",
-            gap: spacing.xs,
-          }}
-        >
-          <span>
-            {loading
-              ? "Loading listings..."
-              : `${listings.length} listing${listings.length === 1 ? "" : "s"} found`}
-          </span>
-          {hasFilters && (
-            <button
-              type="button"
-              onClick={() => {
-                setFilters({})
-                setActiveFilter("All Listings")
-              }}
-              style={{
-                border: "none",
-                background: "none",
-                color: Colors.primary,
-                cursor: "pointer",
-                fontSize: fontSizes.xs,
-              }}
-            >
-              Clear filters
-            </button>
-          )}
-        </div>
-
-        {/* Listings grid */}
+        {/* Listings Grid */}
         {error ? (
           <div
             style={{
-              padding: spacing.md,
-              borderRadius: radius.md,
-              backgroundColor: Colors.backgroundCash,
-              color: Colors.textCash,
-              fontSize: fontSizes.sm,
+              padding: 16,
+              borderRadius: 12,
+              backgroundColor: "#fef2f2",
+              color: "#dc2626",
+              fontSize: 14,
             }}
           >
             {error}
           </div>
-        ) : listings.length === 0 && !loading ? (
+        ) : loading ? (
           <div
             style={{
-              padding: spacing.xxxl,
-              borderRadius: radius.lg,
-              backgroundColor: Colors.neutral10,
+              padding: 48,
               textAlign: "center",
-              color: Colors.textSecondary,
+              color: "#666666",
+            }}
+          >
+            Loading listings...
+          </div>
+        ) : listings.length === 0 ? (
+          <div
+            style={{
+              padding: 48,
+              textAlign: "center",
+              color: "#666666",
+              backgroundColor: "#f9f9f9",
+              borderRadius: 12,
             }}
           >
             No listings found.
           </div>
         ) : (
           <div
+            className="listings-grid"
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))",
-              gap: spacing.md,
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 20,
             }}
           >
             {listings.map((listing) => (
@@ -469,83 +509,81 @@ const ListingsPage: NextPage = () => {
               />
             ))}
           </div>
-        )}
+        )
+        }
 
-        {/* Numbered pagination */}
-        {totalPages > 1 && (
-          <nav
-            aria-label="Listings pages"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: spacing.xs,
-              marginTop: spacing.sm,
-              flexWrap: "wrap",
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => handleChangePage(currentPage - 1)}
-              disabled={currentPage === 1 || loading}
+        {/* Pagination */}
+        {
+          totalPages > 1 && (
+            <nav
+              aria-label="Listings pages"
               style={{
-                padding: `${spacing.xs}px ${spacing.sm}px`,
-                borderRadius: radius.pill,
-                border: `1px solid ${Colors.border}`,
-                backgroundColor: Colors.neutral10,
-                cursor:
-                  currentPage === 1 || loading ? "not-allowed" : "pointer",
-                fontSize: fontSizes.xs,
-                opacity: currentPage === 1 || loading ? 0.5 : 1,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 8,
+                marginTop: 32,
+                flexWrap: "wrap",
               }}
             >
-              Prev
-            </button>
-
-            {pages.map((page) => (
               <button
-                key={page}
                 type="button"
-                onClick={() => handleChangePage(page)}
-                disabled={loading}
+                onClick={() => handleChangePage(currentPage - 1)}
+                disabled={currentPage === 1 || loading}
                 style={{
-                  minWidth: 32,
-                  padding: `${spacing.xs}px ${spacing.sm}px`,
-                  borderRadius: radius.pill,
-                  border: `1px solid ${Colors.border}`,
-                  backgroundColor:
-                    page === currentPage ? Colors.neutral100 : Colors.neutral10,
-                  color: page === currentPage ? Colors.neutral10 : Colors.text,
-                  cursor: loading ? "not-allowed" : "pointer",
-                  fontSize: fontSizes.xs,
-                  fontWeight: page === currentPage ? fontWeights.semibold : fontWeights.medium,
+                  padding: "8px 16px",
+                  borderRadius: 100,
+                  border: "1px solid #e0e0e0",
+                  backgroundColor: "#ffffff",
+                  cursor: currentPage === 1 || loading ? "not-allowed" : "pointer",
+                  fontSize: 13,
+                  opacity: currentPage === 1 || loading ? 0.5 : 1,
                 }}
               >
-                {page}
+                Prev
               </button>
-            ))}
 
-            <button
-              type="button"
-              onClick={() => handleChangePage(currentPage + 1)}
-              disabled={currentPage === totalPages || loading}
-              style={{
-                padding: `${spacing.xs}px ${spacing.sm}px`,
-                borderRadius: radius.pill,
-                border: `1px solid ${Colors.border}`,
-                backgroundColor: Colors.neutral10,
-                cursor:
-                  currentPage === totalPages || loading
-                    ? "not-allowed"
-                    : "pointer",
-                fontSize: fontSizes.xs,
-                opacity: currentPage === totalPages || loading ? 0.5 : 1,
-              }}
-            >
-              Next
-            </button>
-          </nav>
-        )}
+              {pages.map((page) => (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() => handleChangePage(page)}
+                  disabled={loading}
+                  style={{
+                    minWidth: 36,
+                    padding: "8px 12px",
+                    borderRadius: 100,
+                    border: page === currentPage ? "none" : "1px solid #e0e0e0",
+                    backgroundColor: page === currentPage ? "#000000" : "#ffffff",
+                    color: page === currentPage ? "#ffffff" : "#333333",
+                    cursor: loading ? "not-allowed" : "pointer",
+                    fontSize: 13,
+                    fontWeight: page === currentPage ? 600 : 400,
+                  }}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                type="button"
+                onClick={() => handleChangePage(currentPage + 1)}
+                disabled={currentPage === totalPages || loading}
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: 100,
+                  border: "1px solid #e0e0e0",
+                  backgroundColor: "#ffffff",
+                  cursor: currentPage === totalPages || loading ? "not-allowed" : "pointer",
+                  fontSize: 13,
+                  opacity: currentPage === totalPages || loading ? 0.5 : 1,
+                }}
+              >
+                Next
+              </button>
+            </nav>
+          )
+        }
 
         <ListingDetailsDrawer
           isOpen={isDetailsOpen}
@@ -560,11 +598,20 @@ const ListingsPage: NextPage = () => {
           propertyType={activePropertyTab}
           activeFilterTab={activeFilter}
         />
-      </div>
-    </div>
+
+        <AddListingModal
+          isOpen={isAddListingOpen}
+          onClose={() => setIsAddListingOpen(false)}
+          user={user}
+          token={token}
+          onSuccess={() => fetchListings(currentPage, token)}
+        />
+      </div >
+    </div >
   )
 }
 
 export default ListingsPage
+
 
 

@@ -1,5 +1,5 @@
 import type React from "react"
-import { View } from "react-native-web"
+import { Colors } from "@repo/utils/constants/colors"
 import { spacing } from "@repo/utils/styles/tokens"
 
 type OnboardingSplitLayoutProps = {
@@ -8,39 +8,57 @@ type OnboardingSplitLayoutProps = {
 
 export default function OnboardingSplitLayout({ children }: OnboardingSplitLayoutProps) {
   return (
-    <View
-      style={{
-        minHeight: "100vh",
-        flexDirection: "row",
-      }}
-    >
-      {/* Left: content */}
-      <View
-        style={{
-          flex: 1,
-          paddingVertical: spacing.xxxl,
-          paddingHorizontal: spacing.screen,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#ffffff",
-        }}
-      >
-        {children}
-      </View>
+    <>
+      <style>{`
+        .onboarding-layout {
+          min-height: 100vh;
+          display: flex;
+          flex-direction: row;
+          background-color: ${Colors.neutral10};
+        }
+        .onboarding-left-panel {
+          flex: 1;
+          min-width: 320px;
+          position: relative;
+          padding: ${spacing.xxxl}px ${spacing.screen}px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: ${Colors.neutral10};
+        }
+        .onboarding-right-panel {
+          flex: 1;
+          position: relative;
+          overflow: hidden;
+        }
+        .onboarding-right-bg {
+          position: absolute;
+          inset: 0;
+          background-image: url('/web-auth-screen-split-img.png');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+        }
+        @media (max-width: 768px) {
+          .onboarding-right-panel {
+            display: none !important;
+          }
+          .onboarding-left-panel {
+            padding: ${spacing.xl}px ${spacing.lg}px;
+          }
+        }
+      `}</style>
+      <div className="onboarding-layout">
+        {/* Left: content column */}
+        <div className="onboarding-left-panel">
+          {children}
+        </div>
 
-      {/* Right: hero image */}
-      <View
-        style={{
-          flex: 1,
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1600585154340-0ef3c08c0632?auto=format&fit=crop&w=1600&q=80')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      />
-    </View>
+        {/* Right: image panel - hidden on mobile */}
+        <div className="onboarding-right-panel">
+          <div className="onboarding-right-bg" />
+        </div>
+      </div>
+    </>
   )
 }
-
-

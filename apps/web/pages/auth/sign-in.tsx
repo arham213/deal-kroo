@@ -1,10 +1,12 @@
 import { useMemo, useState } from "react"
 import { useRouter } from "next/router"
-import { ScrollView, Text, TextInput, View } from "react-native-web"
+import { ScrollView, Text, View } from "react-native-web"
 import { Colors } from "@repo/utils/constants/colors"
-import { fontSizes, fontWeights, radius, spacing } from "@repo/utils/styles/tokens"
+import { fontSizes, fontWeights, spacing } from "@repo/utils/styles/tokens"
 import { useAuthContext } from "../../contexts/AuthContext"
 import AuthSplitLayout from "../../components/AuthSplitLayout"
+import { TextField } from "../../components/TextField"
+import { Button } from "../../components/Button"
 import {
   createInitialSignInFormState,
   createSignInTouchedState,
@@ -18,109 +20,6 @@ import {
   type SignInTouchedState,
   type SignInValidationErrors,
 } from "@repo/utils/auth/signIn"
-
-type LocalButtonProps = {
-  title: string
-  onPress: () => void
-  loading?: boolean
-  disabled?: boolean
-  style?: React.CSSProperties
-}
-
-const RNButton = ({ title, onPress, loading, disabled, style }: LocalButtonProps) => (
-  <button
-    type="button"
-    onClick={onPress}
-    disabled={disabled || loading}
-    style={{
-      marginTop: spacing.sm,
-      width: "100%",
-      borderRadius: radius.pill,
-      paddingTop: spacing.md2,
-      paddingBottom: spacing.md2,
-      border: "none",
-      cursor: disabled || loading ? "not-allowed" : "pointer",
-      opacity: disabled || loading ? 0.5 : 1,
-      backgroundColor: Colors.neutral100,
-      color: Colors.white,
-      fontSize: fontSizes.base,
-      fontWeight: fontWeights.semibold,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: spacing.sm,
-      ...(style || {}),
-    }}
-  >
-    {loading ? "Loading..." : title}
-  </button>
-)
-
-type LocalTextInputProps = React.ComponentProps<typeof TextInput> & {
-  label?: string
-  error?: string
-  helperText?: string
-}
-
-const RNTextInputField = ({
-  label,
-  error,
-  helperText,
-  ...props
-}: LocalTextInputProps) => {
-  const showHelperText = !error && helperText
-
-  return (
-    <View style={{ gap: 8 }}>
-      {label && (
-        <Text
-          style={{
-            fontSize: fontSizes.sm,
-            fontWeight: fontWeights.medium,
-            color: Colors.text,
-          }}
-        >
-          {label}
-        </Text>
-      )}
-      <TextInput
-        style={{
-          borderWidth: 1,
-          borderColor: error ? Colors.error : Colors.border,
-          borderRadius: radius.pill,
-          paddingHorizontal: spacing.md,
-          paddingVertical: spacing.sm2,
-          fontSize: fontSizes.sm,
-          color: Colors.text,
-          backgroundColor: Colors.inputBackground,
-        }}
-        placeholderTextColor={Colors.placeholder}
-        {...props}
-      />
-      {error ? (
-        <Text
-          style={{
-            marginTop: spacing.xs,
-            fontSize: fontSizes.xs,
-            color: Colors.error,
-          }}
-        >
-          {error}
-        </Text>
-      ) : showHelperText ? (
-        <Text
-          style={{
-            marginTop: spacing.xs,
-            fontSize: fontSizes.xs,
-            color: Colors.textSecondary,
-          }}
-        >
-          {helperText}
-        </Text>
-      ) : null}
-    </View>
-  )
-}
 
 export default function SignInPage() {
   const router = useRouter()
@@ -230,17 +129,18 @@ export default function SignInPage() {
     <AuthSplitLayout>
       <ScrollView
         contentContainerStyle={{
-          maxWidth: 480,
+          maxWidth: 420,
           width: "100%",
           alignSelf: "center",
-          gap: spacing.xl,
+          paddingHorizontal: spacing.xl,
+          paddingVertical: spacing.xxxl,
         }}
       >
-        <View style={{ marginBottom: 16 }}>
+        <View style={{ marginBottom: spacing.xxl }}>
           <Text
             style={{
               fontSize: fontSizes.xxl,
-              fontWeight: fontWeights.bold,
+              fontWeight: fontWeights.semibold,
               color: Colors.text,
               marginBottom: spacing.sm,
               textAlign: "center",
@@ -255,115 +155,102 @@ export default function SignInPage() {
               textAlign: "center",
             }}
           >
-            Welcome back! Sign in to your account
+            Enter details below to sign in
           </Text>
         </View>
 
-        <View
-          style={{
-            backgroundColor: Colors.neutral10,
-            borderRadius: radius.xxl,
-            padding: spacing.xl,
-            shadowColor: Colors.black,
-            shadowOpacity: 0.06,
-            shadowRadius: 12,
-            shadowOffset: { width: 0, height: 4 },
-            gap: spacing.lg,
-          }}
-        >
-          <View style={{ gap: spacing.lg }}>
-            <RNTextInputField
-              label="Email"
-              placeholder="Enter your email"
-              value={form.email}
-              onChangeText={handleChange("email")}
-              onBlur={handleBlur("email")}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              editable={!loading}
-              error={touched.email ? errors.email : undefined}
-            />
-            <RNTextInputField
-              label="Password"
-              placeholder="Enter your password"
-              value={form.password}
-              onChangeText={handleChange("password")}
-              onBlur={handleBlur("password")}
-              secureTextEntry
-              editable={!loading}
-              error={touched.password ? errors.password : undefined}
-            />
-          </View>
+        <View style={{ gap: spacing.xl }}>
+          <TextField
+            label="Email"
+            placeholder="Enter your email"
+            value={form.email}
+            onChangeText={handleChange("email")}
+            onBlur={handleBlur("email")}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            editable={!loading}
+            error={touched.email ? errors.email : undefined}
+          />
+          <TextField
+            label="Password"
+            placeholder="Enter your password"
+            value={form.password}
+            onChangeText={handleChange("password")}
+            onBlur={handleBlur("password")}
+            secureTextEntry
+            editable={!loading}
+            error={touched.password ? errors.password : undefined}
+          />
+        </View>
 
-          {apiError ? (
-            <Text style={{ fontSize: fontSizes.sm, color: Colors.error }}>{apiError}</Text>
-          ) : null}
+        {apiError ? (
+          <Text style={{ fontSize: fontSizes.sm, color: Colors.error, marginTop: spacing.lg }}>
+            {apiError}
+          </Text>
+        ) : null}
 
-          <RNButton
+        <View style={{ marginTop: spacing.xxl }}>
+          <Button
             title="Sign In"
             onPress={handleSignIn}
             loading={loading}
             disabled={isSubmitDisabled}
-            style={{
-              marginTop: 8,
-            }}
           />
+        </View>
 
-          <View
+        <View
+          style={{
+            alignItems: "center",
+            marginTop: spacing.lg,
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => router.push("/forgot-password")}
             style={{
-              alignItems: "center",
-              marginTop: spacing.sm,
+              border: "none",
+              backgroundColor: "transparent",
+              padding: 0,
+              margin: 0,
+              cursor: "pointer",
+              fontSize: fontSizes.sm,
+              fontWeight: fontWeights.semibold,
+              color: Colors.neutral100,
             }}
           >
-            <button
-              type="button"
-              onClick={() => router.push("/forgot-password")}
-              style={{
-                border: "none",
-                backgroundColor: "transparent",
-                padding: 0,
-                margin: 0,
-                cursor: "pointer",
-                fontSize: fontSizes.sm,
-                fontWeight: fontWeights.semibold,
-                color: Colors.neutral100,
-              }}
-            >
-              Forgot Password?
-            </button>
-          </View>
+            Forgot Password?
+          </button>
+        </View>
 
-          <View
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: spacing.lg,
+          }}
+        >
+          <Text style={{ fontSize: fontSizes.sm, color: Colors.textSecondary }}>
+            Don't have an account?{" "}
+          </Text>
+          <button
+            type="button"
+            onClick={() => router.push("/auth/sign-up")}
             style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: spacing.sm,
+              border: "none",
+              backgroundColor: "transparent",
+              padding: 0,
+              margin: 0,
+              cursor: "pointer",
+              fontSize: fontSizes.sm,
+              fontWeight: fontWeights.semibold,
+              color: Colors.neutral100,
             }}
           >
-            <Text style={{ fontSize: fontSizes.sm, color: Colors.textSecondary }}>
-              Don't have an account?{" "}
-            </Text>
-            <button
-              type="button"
-              onClick={() => router.push("/auth/sign-up")}
-              style={{
-                border: "none",
-                backgroundColor: "transparent",
-                padding: 0,
-                margin: 0,
-                cursor: "pointer",
-                fontSize: fontSizes.sm,
-                fontWeight: fontWeights.semibold,
-                color: Colors.neutral100,
-              }}
-            >
-              Sign Up
-            </button>
-          </View>
+            Sign Up
+          </button>
         </View>
       </ScrollView>
     </AuthSplitLayout>
   )
 }
-

@@ -16,7 +16,7 @@ import { fontSizes, fontWeights, radius, spacing } from "@repo/utils/styles/toke
 import { Validation } from "@repo/utils/validation"
 import { useAuthContext } from "../contexts/AuthContext"
 
-const BASE_URL = "https://deal-karo-backend.vercel.app/api"
+const BASE_URL = "https://api.dealkroo.com/api"
 
 const emptyUser: User = {
   _id: "",
@@ -239,8 +239,8 @@ const ProfilePage: NextPage = () => {
       if (axios.isAxiosError(error)) {
         setGlobalError(
           error.response?.data?.error?.message ||
-            error.response?.data?.message ||
-            "Failed to update profile. Please try again.",
+          error.response?.data?.message ||
+          "Failed to update profile. Please try again.",
         )
       } else {
         setGlobalError("Something went wrong. Please try again later")
@@ -522,9 +522,8 @@ const ProfilePage: NextPage = () => {
                 style={{
                   width: "100%",
                   borderRadius: radius.pill,
-                  border: `1px solid ${
-                    touched.contactNo && errors.contactNo ? Colors.error : Colors.border
-                  }`,
+                  border: `1px solid ${touched.contactNo && errors.contactNo ? Colors.error : Colors.border
+                    }`,
                   padding: `${spacing.sm}px ${spacing.md}px`,
                   fontSize: fontSizes.sm,
                   backgroundColor: Colors.neutral10,
@@ -566,9 +565,8 @@ const ProfilePage: NextPage = () => {
                 style={{
                   width: "100%",
                   borderRadius: radius.pill,
-                  border: `1px solid ${
-                    touched.estateName && errors.estateName ? Colors.error : Colors.border
-                  }`,
+                  border: `1px solid ${touched.estateName && errors.estateName ? Colors.error : Colors.border
+                    }`,
                   padding: `${spacing.sm}px ${spacing.md}px`,
                   fontSize: fontSizes.sm,
                   backgroundColor: Colors.neutral10,

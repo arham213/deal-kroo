@@ -4,7 +4,7 @@
 // import { showErrorToast } from "./toast"
 // import { isTokenExpired } from "./tokenValidation"
 
-// const BASE_URL = "https://deal-karo-backend.vercel.app/api"
+// const BASE_URL = "https://api.dealkroo.com/api"
 
 // // Create axios instance
 // export const apiClient = axios.create({

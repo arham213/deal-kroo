@@ -7,7 +7,7 @@ import { fontSizes, fontWeights, radius, spacing } from "@repo/utils/styles/toke
 import { useAuthContext } from "../contexts/AuthContext"
 import OnboardingSplitLayout from "../components/OnboardingSplitLayout"
 
-const BASE_URL = "https://deal-karo-backend.vercel.app/api"
+const BASE_URL = "https://api.dealkroo.com/api"
 
 const slides = [
   {
@@ -68,7 +68,6 @@ const OnboardingPage: NextPage = () => {
       // Refresh auth context (in case other flags depend on this)
       await checkAuth()
 
-      alert("Onboarding completed successfully!")
       router.replace("/listings")
     } catch (error) {
       const message =
@@ -99,77 +98,94 @@ const OnboardingPage: NextPage = () => {
     <OnboardingSplitLayout>
       <div
         style={{
-          maxWidth: 420,
+          maxWidth: 380,
           width: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
+          alignItems: "center",
           gap: spacing.xxxl,
         }}
       >
-        {/* Logo placeholder */}
+        {/* Logo centered at top */}
         <div
           style={{
-            fontSize: fontSizes.lg,
-            fontWeight: fontWeights.bold,
-            letterSpacing: 4,
             marginBottom: spacing.xl,
           }}
         >
-          DEALS
+          <img
+            src="/black-logo.png"
+            alt="Deals Logo"
+            style={{
+              height: 48,
+              width: "auto",
+            }}
+          />
         </div>
 
-        <div>
+        {/* Content - left aligned */}
+        <div
+          style={{
+            width: "100%",
+            textAlign: "left",
+          }}
+        >
           <h1
             style={{
               fontSize: fontSizes.xxl,
               fontWeight: fontWeights.bold,
               color: Colors.text,
               marginBottom: spacing.sm,
+              lineHeight: 1.3,
             }}
           >
             {activeSlide?.title}
           </h1>
           <p
             style={{
-              fontSize: fontSizes.base,
+              fontSize: fontSizes.sm,
               color: Colors.textSecondary,
-              maxWidth: 420,
+              maxWidth: 300,
+              lineHeight: 1.5,
             }}
           >
             {activeSlide?.description}
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={handleNext}
-          disabled={loading}
-          style={{
-            marginTop: spacing.xl,
-            borderRadius: radius.pill,
-            padding: `${spacing.md2}px ${spacing.lg * 2}px`,
-            border: "none",
-            backgroundColor: loading ? Colors.neutral60 : Colors.neutral100,
-            color: Colors.white,
-            fontSize: fontSizes.sm,
-            fontWeight: fontWeights.semibold,
-            cursor: loading ? "not-allowed" : "pointer",
-            alignSelf: "flex-start",
-          }}
-        >
-          {loading
-            ? "Completing..."
-            : currentIndex === slides.length - 1
-              ? "Get Started"
-              : "Continue"}
-        </button>
+        {/* Continue button - left aligned, contained width */}
+        <div style={{ width: "100%" }}>
+          <button
+            type="button"
+            onClick={handleNext}
+            disabled={loading}
+            style={{
+              borderRadius: radius.pill,
+              width: "100%",
+              padding: `${spacing.md2}px ${spacing.xxxl * 2}px`,
+              border: "none",
+              backgroundColor: loading ? Colors.neutral60 : Colors.neutral100,
+              color: Colors.white,
+              fontSize: fontSizes.sm,
+              fontWeight: fontWeights.semibold,
+              cursor: loading ? "not-allowed" : "pointer",
+              fontFamily: "inherit",
+            }}
+          >
+            {loading
+              ? "Completing..."
+              : currentIndex === slides.length - 1
+                ? "Get Started"
+                : "Continue"}
+          </button>
+        </div>
 
+        {/* Dots indicator - centered */}
         <div
           style={{
-            marginTop: spacing.xl,
             display: "flex",
+            justifyContent: "center",
             gap: 8,
+            width: "100%",
           }}
         >
           {slides.map((_, index) => (
@@ -191,5 +207,3 @@ const OnboardingPage: NextPage = () => {
 }
 
 export default OnboardingPage
-
-

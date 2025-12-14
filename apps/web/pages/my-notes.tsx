@@ -11,8 +11,9 @@ import {
 import { Colors } from "@repo/utils/constants/colors"
 import { fontSizes, fontWeights, radius, spacing } from "@repo/utils/styles/tokens"
 import { useAuthContext } from "../contexts/AuthContext"
+import { LoggedInHeader } from "../components/common/LoggedInHeader"
 
-const BASE_URL = "https://deal-karo-backend.vercel.app/api"
+const BASE_URL = "https://api.dealkroo.com/api"
 const PAGE_SIZE = parseInt(process.env.PAGINATION_LIMIT || "25", 10)
 
 const MyNotesPage: NextPage = () => {
@@ -294,420 +295,424 @@ const MyNotesPage: NextPage = () => {
   const noteHelperText = noteError ? undefined : `Max ${NOTE_MAX_LENGTH} characters`
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: Colors.headerBackground,
-        padding: `${spacing.xxxl}px ${spacing.screen}px`,
-        display: "flex",
-        justifyContent: "center",
-      }}
-    >
+    <div style={{ minHeight: "100vh", backgroundColor: "#ffffff" }}>
+      <LoggedInHeader />
       <div
         style={{
-          width: "100%",
-          maxWidth: 1200,
-          backgroundColor: Colors.neutral10,
-          borderRadius: radius.xxl,
-          padding: spacing.xl,
-          boxShadow: "0 12px 40px rgba(15,23,42,0.25)",
+          padding: `${spacing.xl}px ${spacing.screen}px`,
           display: "flex",
-          flexDirection: "column",
-          gap: spacing.xl,
+          justifyContent: "center",
         }}
       >
-        {/* Header */}
-        <header
+        <div
           style={{
+            width: "100%",
+            maxWidth: 1200,
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: spacing.md,
-            flexWrap: "wrap",
+            flexDirection: "column",
+            gap: spacing.xl,
           }}
         >
-          <div>
+          {/* Header */}
+          <header
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: spacing.md,
+              flexWrap: "wrap",
+              marginTop: spacing.md,
+            }}
+          >
             <h1
               style={{
-                fontSize: fontSizes.xl,
-                fontWeight: fontWeights.bold,
+                fontSize: fontSizes.xxl,
+                fontWeight: fontWeights.medium,
                 color: Colors.text,
-                marginBottom: spacing.xs,
               }}
             >
               My Notes
             </h1>
-            <p style={{ fontSize: fontSizes.sm, color: Colors.textSecondary }}>
-              Keep track of important reminders related to your properties.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={handleOpenModal}
-            style={{
-              borderRadius: radius.pill,
-              padding: `${spacing.sm}px ${spacing.lg}px`,
-              border: "none",
-              backgroundColor: Colors.neutral100,
-              color: Colors.neutral10,
-              fontSize: fontSizes.sm,
-              fontWeight: fontWeights.semibold,
-              cursor: "pointer",
-            }}
-          >
-            Add New Note
-          </button>
-        </header>
+            <button
+              type="button"
+              onClick={handleOpenModal}
+              style={{
+                borderRadius: radius.pill,
+                padding: `${spacing.sm}px ${spacing.xl}px`,
+                border: "none",
+                backgroundColor: Colors.neutral100,
+                color: Colors.neutral10,
+                fontSize: fontSizes.sm,
+                fontWeight: fontWeights.regular,
+                cursor: "pointer",
+              }}
+            >
+              Add New Note
+            </button>
+          </header>
 
-        {/* Status row */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            fontSize: fontSizes.xs,
-            color: Colors.textSecondary,
-            flexWrap: "wrap",
-            gap: spacing.xs,
-          }}
-        >
-          <span>
-            {loading
-              ? "Loading notes..."
-              : `${notes.length} note${notes.length === 1 ? "" : "s"} found`}
-          </span>
-        </div>
-
-        {/* Notes list */}
-        {error ? (
-          <div
-            style={{
-              padding: spacing.md,
-              borderRadius: radius.md,
-              backgroundColor: Colors.backgroundCash,
-              color: Colors.textCash,
-              fontSize: fontSizes.sm,
-            }}
-          >
-            {error}
-          </div>
-        ) : notes.length === 0 && !loading ? (
-          <div
-            style={{
-              padding: spacing.xxxl,
-              borderRadius: radius.lg,
-              backgroundColor: Colors.neutral10,
-              textAlign: "center",
-              color: Colors.textSecondary,
-            }}
-          >
-            No notes found.
-          </div>
-        ) : (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(420px, 1fr))",
-              gap: spacing.md,
-            }}
-          >
-            {notes.map((note) => (
-              <article
-                key={note._id}
-                style={{
-                  backgroundColor: Colors.neutral10,
-                  borderRadius: radius.xl,
-                  border: `1px solid ${Colors.border}`,
-                  padding: spacing.lg,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: spacing.sm,
-                  boxShadow: "0 1px 2px rgba(15,23,42,0.03)",
-                }}
-              >
-                <p
+          {/* Notes list */}
+          {error ? (
+            <div
+              style={{
+                padding: spacing.md,
+                borderRadius: radius.md,
+                backgroundColor: Colors.backgroundCash,
+                color: Colors.textCash,
+                fontSize: fontSizes.sm,
+              }}
+            >
+              {error}
+            </div>
+          ) : notes.length === 0 && !loading ? (
+            <div
+              style={{
+                padding: spacing.xxxl,
+                borderRadius: radius.lg,
+                textAlign: "center",
+                color: Colors.textSecondary,
+                marginTop: spacing.xl,
+              }}
+            >
+              No notes found. Add a new note to get started.
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(450px, 1fr))",
+                gap: spacing.lg,
+              }}
+            >
+              {notes.map((note) => (
+                <article
+                  key={note._id}
                   style={{
-                    fontSize: fontSizes.sm,
-                    color: Colors.text,
-                    lineHeight: 1.5,
-                  }}
-                >
-                  {note.description}
-                </p>
-                <div
-                  style={{
+                    backgroundColor: "#ffffff",
+                    borderRadius: radius.xl,
+                    border: `1px solid ${Colors.neutral30}`,
+                    padding: spacing.lg,
                     display: "flex",
+                    flexDirection: "column",
                     justifyContent: "space-between",
-                    alignItems: "center",
-                    gap: spacing.sm,
-                    marginTop: spacing.xs,
+                    gap: spacing.md,
                   }}
                 >
+                  <p
+                    style={{
+                      fontSize: fontSizes.base,
+                      color: Colors.text,
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {note.description}
+                  </p>
                   <div
                     style={{
                       display: "flex",
+                      justifyContent: "space-between",
                       alignItems: "center",
-                      gap: spacing.xxxs,
+                      gap: spacing.sm,
+                      marginTop: "auto",
                     }}
                   >
-                    <span
+                    <div
                       style={{
-                        fontSize: fontSizes.xs,
-                        color: Colors.textSecondary,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: spacing.xs,
                       }}
                     >
-                      ⏱
-                    </span>
-                    <span
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#9ca3af"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
+                      <span
+                        style={{
+                          fontSize: fontSizes.sm,
+                          color: Colors.textSecondary,
+                        }}
+                      >
+                        {formatNoteDate(note.createdAt)}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleMarkAsDone(note._id)}
                       style={{
-                        fontSize: fontSizes.xs,
-                        color: Colors.textSecondary,
+                        borderRadius: radius.pill,
+                        padding: 0,
+                        border: "none",
+                        backgroundColor: "transparent",
+                        color: "#10B981", // Green color matching design roughly
+                        fontSize: fontSizes.sm,
+                        fontWeight: fontWeights.medium,
+                        cursor: "pointer",
                       }}
                     >
-                      {formatNoteDate(note.createdAt)}
-                    </span>
+                      Mark as done
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => handleMarkAsDone(note._id)}
-                    style={{
-                      borderRadius: radius.pill,
-                      padding: 0,
-                      border: "none",
-                      backgroundColor: "transparent",
-                      color: Colors.success2,
-                      fontSize: fontSizes.xs,
-                      fontWeight: fontWeights.semibold,
-                      cursor: "pointer",
-                    }}
-                  >
-                    Mark as done
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
+                </article>
+              ))}
+            </div>
+          )}
 
-        {/* Numbered pagination */}
-        {totalPages > 1 && (
-          <nav
-            aria-label="My notes pages"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: spacing.xs,
-              marginTop: spacing.sm,
-              flexWrap: "wrap",
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => handleChangePage(currentPage - 1)}
-              disabled={currentPage === 1 || loading}
+          {/* Numbered pagination */}
+          {totalPages > 1 && (
+            <nav
+              aria-label="My notes pages"
               style={{
-                padding: `${spacing.xs}px ${spacing.sm}px`,
-                borderRadius: radius.pill,
-                border: `1px solid ${Colors.border}`,
-                backgroundColor: Colors.neutral10,
-                cursor:
-                  currentPage === 1 || loading ? "not-allowed" : "pointer",
-                fontSize: fontSizes.xs,
-                opacity: currentPage === 1 || loading ? 0.5 : 1,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: spacing.xs,
+                marginTop: spacing.xl,
+                flexWrap: "wrap",
               }}
             >
-              Prev
-            </button>
-
-            {pages.map((page) => (
+              {/* Pagination buttons - keeping existing logic but maybe simplified style if needed. Existing style is fine. */}
               <button
-                key={page}
                 type="button"
-                onClick={() => handleChangePage(page)}
-                disabled={loading}
+                onClick={() => handleChangePage(currentPage - 1)}
+                disabled={currentPage === 1 || loading}
                 style={{
-                  minWidth: 32,
                   padding: `${spacing.xs}px ${spacing.sm}px`,
                   borderRadius: radius.pill,
                   border: `1px solid ${Colors.border}`,
-                  backgroundColor:
-                    page === currentPage ? Colors.neutral100 : Colors.neutral10,
-                  color: page === currentPage ? Colors.neutral10 : Colors.text,
-                  cursor: loading ? "not-allowed" : "pointer",
-                  fontSize: fontSizes.xs,
-                  fontWeight: page === currentPage ? fontWeights.semibold : fontWeights.medium,
-                }}
-              >
-                {page}
-              </button>
-            ))}
-
-            <button
-              type="button"
-              onClick={() => handleChangePage(currentPage + 1)}
-              disabled={currentPage === totalPages || loading}
-              style={{
-                padding: `${spacing.xs}px ${spacing.sm}px`,
-                borderRadius: radius.pill,
-                border: `1px solid ${Colors.border}`,
-                backgroundColor: Colors.neutral10,
-                cursor:
-                  currentPage === totalPages || loading
-                    ? "not-allowed"
-                    : "pointer",
-                fontSize: fontSizes.xs,
-                opacity: currentPage === totalPages || loading ? 0.5 : 1,
-              }}
-            >
-              Next
-            </button>
-          </nav>
-        )}
-      </div>
-
-      {/* Add Note Modal */}
-      {showAddModal && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 50,
-          }}
-        >
-          <div
-            style={{
-              width: "100%",
-              maxWidth: 480,
-              backgroundColor: Colors.neutral10,
-              borderRadius: radius.xxl,
-              padding: spacing.lg,
-              boxShadow: "0 12px 40px rgba(15,23,42,0.35)",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: spacing.sm,
-              }}
-            >
-              <h2
-                style={{
-                  fontSize: fontSizes.lg,
-                  fontWeight: fontWeights.bold,
-                  color: Colors.text,
-                }}
-              >
-                Add New Note
-              </h2>
-              <button
-                type="button"
-                onClick={handleCloseModal}
-                style={{
-                  border: "none",
-                  background: "none",
-                  cursor: "pointer",
-                  fontSize: fontSizes.lg,
-                  color: Colors.textSecondary,
-                }}
-              >
-                ×
-              </button>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: spacing.xs,
-              }}
-            >
-              <textarea
-                rows={4}
-                placeholder="Type your note here..."
-                value={newNoteDescription}
-                onChange={(e) => handleNoteChange(e.target.value)}
-                onBlur={() => {
-                  setNoteTouched(true)
-                  setNoteError(validateNoteDescription(newNoteDescription))
-                }}
-                style={{
-                  width: "100%",
-                  borderRadius: radius.lg,
-                  border: `1px solid ${noteTouched && noteError ? "#DC2626" : "#D1D5DB"}`,
-                  padding: `${spacing.md2}px ${spacing.md}px`,
-                  fontSize: fontSizes.sm,
-                  resize: "vertical",
-                  backgroundColor: Colors.neutral10,
-                }}
-              />
-              {noteTouched && noteError && (
-                <p style={{ fontSize: fontSizes.xs, color: Colors.error }}>{noteError}</p>
-              )}
-              {!noteError && (
-                <p style={{ fontSize: fontSizes.xs, color: Colors.textSecondary }}>
-                  {noteHelperText}
-                </p>
-              )}
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: spacing.xs,
-                marginTop: spacing.md,
-              }}
-            >
-              <button
-                type="button"
-                onClick={handleAddNote}
-                disabled={submitting || Boolean(validateNoteDescription(newNoteDescription))}
-                style={{
-                  borderRadius: radius.pill,
-                  padding: `${spacing.md2}px ${spacing.lg}px`,
-                  border: "none",
-                  backgroundColor:
-                    submitting || Boolean(validateNoteDescription(newNoteDescription))
-                      ? Colors.neutral60
-                      : Colors.neutral100,
-                  color: Colors.neutral10,
-                  fontSize: fontSizes.sm,
-                  fontWeight: fontWeights.semibold,
+                  backgroundColor: "transparent",
                   cursor:
-                    submitting || Boolean(validateNoteDescription(newNoteDescription))
+                    currentPage === 1 || loading ? "not-allowed" : "pointer",
+                  fontSize: fontSizes.xs,
+                  opacity: currentPage === 1 || loading ? 0.5 : 1,
+                }}
+              >
+                Prev
+              </button>
+
+              {pages.map((page) => (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() => handleChangePage(page)}
+                  disabled={loading}
+                  style={{
+                    minWidth: 32,
+                    padding: `${spacing.xs}px ${spacing.sm}px`,
+                    borderRadius: radius.pill,
+                    border: page === currentPage ? "none" : `1px solid ${Colors.border}`,
+                    backgroundColor:
+                      page === currentPage ? Colors.neutral100 : "transparent",
+                    color: page === currentPage ? Colors.neutral10 : Colors.text,
+                    cursor: loading ? "not-allowed" : "pointer",
+                    fontSize: fontSizes.xs,
+                    fontWeight: page === currentPage ? fontWeights.semibold : fontWeights.medium,
+                  }}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                type="button"
+                onClick={() => handleChangePage(currentPage + 1)}
+                disabled={currentPage === totalPages || loading}
+                style={{
+                  padding: `${spacing.xs}px ${spacing.sm}px`,
+                  borderRadius: radius.pill,
+                  border: `1px solid ${Colors.border}`,
+                  backgroundColor: "transparent",
+                  cursor:
+                    currentPage === totalPages || loading
                       ? "not-allowed"
                       : "pointer",
+                  fontSize: fontSizes.xs,
+                  opacity: currentPage === totalPages || loading ? 0.5 : 1,
                 }}
               >
-                {submitting ? "Adding..." : "Add"}
+                Next
               </button>
-              <button
-                type="button"
-                onClick={handleCloseModal}
+            </nav>
+          )}
+        </div>
+
+        {/* Add Note Modal */}
+        {showAddModal && (
+          <div
+            onClick={(e) => {
+              if (e.target === e.currentTarget) handleCloseModal()
+            }}
+            style={{
+              position: "fixed",
+              inset: 0,
+              backgroundColor: "rgba(0,0,0,0.5)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 50,
+              padding: 24,
+            }}
+          >
+            <style>{`
+            .add-note-modal textarea::placeholder {
+              color: #666;
+            }
+          `}</style>
+            <div
+              className="add-note-modal"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: "100%",
+                maxWidth: 640,
+                backgroundColor: Colors.neutral10,
+                borderRadius: 24,
+                padding: 32,
+                boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+              }}
+            >
+              <div
                 style={{
-                  borderRadius: radius.pill,
-                  padding: `${spacing.md2}px ${spacing.lg}px`,
-                  border: `1px solid ${Colors.border}`,
-                  backgroundColor: Colors.neutral10,
-                  color: Colors.text,
-                  fontSize: fontSizes.sm,
-                  fontWeight: fontWeights.medium,
-                  cursor: "pointer",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  marginBottom: spacing.xl,
                 }}
               >
-                Cancel
-              </button>
+                <h2
+                  style={{
+                    fontSize: fontSizes.xl,
+                    fontWeight: fontWeights.semibold,
+                    color: Colors.text,
+                    margin: 0,
+                  }}
+                >
+                  Add New Note
+                </h2>
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: "50%",
+                    backgroundColor: Colors.neutral10,
+                    border: "none",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    padding: 0,
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1L13 13M1 13L13 1" stroke="#666666" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: spacing.xs,
+                }}
+              >
+                <textarea
+                  rows={4}
+                  placeholder="Type your note here..."
+                  value={newNoteDescription}
+                  onChange={(e) => handleNoteChange(e.target.value)}
+                  onBlur={() => {
+                    setNoteTouched(true)
+                    setNoteError(validateNoteDescription(newNoteDescription))
+                  }}
+                  style={{
+                    width: "100%",
+                    borderRadius: radius.lg,
+                    border: `1px solid ${noteTouched && noteError ? Colors.error : Colors.border}`,
+                    padding: `${spacing.sm}px ${spacing.lg}px`,
+                    fontSize: fontSizes.sm,
+                    resize: "vertical",
+                    backgroundColor: Colors.inputBackground,
+                    outline: "none",
+                    color: Colors.text,
+                    minHeight: 120,
+                    fontFamily: "inherit",
+                  }}
+                />
+                {noteTouched && noteError && (
+                  <p style={{ fontSize: fontSizes.xs, color: Colors.error, marginTop: spacing.xs }}>{noteError}</p>
+                )}
+                {!noteError && (
+                  <p style={{ fontSize: fontSizes.xs, color: Colors.textSecondary, marginTop: spacing.xs }}>
+                    {noteHelperText}
+                  </p>
+                )}
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: spacing.sm,
+                  marginTop: spacing.xl,
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={handleAddNote}
+                  disabled={submitting || Boolean(validateNoteDescription(newNoteDescription))}
+                  style={{
+                    borderRadius: radius.pill,
+                    padding: `${spacing.sm2}px ${spacing.lg}px`,
+                    border: "none",
+                    backgroundColor:
+                      submitting || Boolean(validateNoteDescription(newNoteDescription))
+                        ? Colors.neutral60
+                        : Colors.neutral100,
+                    color: Colors.neutral10,
+                    fontSize: fontSizes.xs,
+                    fontWeight: fontWeights.regular,
+                    cursor:
+                      submitting || Boolean(validateNoteDescription(newNoteDescription))
+                        ? "not-allowed"
+                        : "pointer",
+                  }}
+                >
+                  {submitting ? "Adding..." : "Add"}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  style={{
+                    borderRadius: radius.pill,
+                    padding: `${spacing.sm2}px ${spacing.lg}px`,
+                    border: `1px solid ${Colors.border}`,
+                    backgroundColor: Colors.neutral10,
+                    color: Colors.text,
+                    fontSize: fontSizes.xs,
+                    fontWeight: fontWeights.regular,
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

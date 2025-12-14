@@ -1,7 +1,7 @@
 import type React from "react"
-import { View, Text } from "react-native-web"
+import { View } from "react-native-web"
 import { Colors } from "@repo/utils/constants/colors"
-import { fontSizes, fontWeights, spacing } from "@repo/utils/styles/tokens"
+import { spacing } from "@repo/utils/styles/tokens"
 
 type AuthSplitLayoutProps = {
   children: React.ReactNode
@@ -9,83 +9,104 @@ type AuthSplitLayoutProps = {
 
 export default function AuthSplitLayout({ children }: AuthSplitLayoutProps) {
   return (
-    <View
-      style={{
-        minHeight: "100vh",
-        flexDirection: "row",
-        backgroundColor: Colors.neutral10,
-      }}
-    >
-      {/* Left: form column */}
-      <View
-        style={{
-          flex: 1,
-          paddingVertical: spacing.xxxl,
-          paddingHorizontal: spacing.screen,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: Colors.neutral10,
-        }}
-      >
-        {children}
-      </View>
+    <>
+      <style>{`
+        .auth-layout {
+          min-height: 100vh;
+          display: flex;
+          flex-direction: row;
+          background-color: ${Colors.neutral10};
+        }
+        .auth-left-panel {
+          flex: 1;
+          min-width: 320px;
+          position: relative;
+          padding: ${spacing.xxxl}px ${spacing.screen}px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: ${Colors.neutral10};
+        }
+        .auth-logo {
+          position: absolute;
+          top: ${spacing.xl}px;
+          left: ${spacing.xl}px;
+        }
+        .auth-logo img {
+          height: 32px;
+          width: auto;
+        }
+        .auth-right-panel {
+          flex: 1;
+          background-color: #1a1a1a;
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .auth-right-bg {
+          position: absolute;
+          inset: 0;
+          background-image: url('/web-auth-screen-split-img.png');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+        }
+        .auth-right-overlay {
+          position: absolute;
+          inset: 0;
+          background-color: rgba(0, 0, 0, 0.3);
+        }
+        .auth-right-logo {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .auth-right-logo img {
+          height: 100px;
+          width: auto;
+        }
+        @media (max-width: 768px) {
+          .auth-right-panel {
+            display: none !important;
+          }
+          .auth-left-panel {
+            padding: ${spacing.xl}px ${spacing.lg}px;
+          }
+        }
+      `}</style>
+      <div className="auth-layout">
+        {/* Left: form column */}
+        <div className="auth-left-panel">
+          {/* Logo at top-left */}
+          <div className="auth-logo">
+            <img
+              src="/black-logo.png"
+              alt="Deals Logo"
+            />
+          </div>
+          {children}
+        </div>
 
-      {/* Right: image/brand panel */}
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: "#0b0b0b",
-          position: "relative",
-          overflow: "hidden",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: spacing.xxxl,
-        }}
-      >
-        <View
-          style={{
-            position: "absolute",
-            inset: 0,
-              opacity: 0.85,
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1600585154340-0ef3c08c0632?auto=format&fit=crop&w=1600&q=80')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            filter: "grayscale(0.2)",
-          }}
-        />
+        {/* Right: image/brand panel - hidden on mobile */}
+        <div className="auth-right-panel">
+          {/* Background Image */}
+          <div className="auth-right-bg" />
 
-        <View
-          style={{
-            position: "relative",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: spacing.sm,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 40,
-              letterSpacing: 4,
-              fontWeight: fontWeights.bold,
-              color: Colors.neutral10,
-            }}
-          >
-            DEALS
-          </Text>
-          <Text
-            style={{
-              fontSize: fontSizes.sm,
-              color: Colors.neutral20,
-            }}
-          >
-            Smart real estate management, simplified.
-          </Text>
-        </View>
-      </View>
-    </View>
+          {/* Overlay for better logo visibility */}
+          <div className="auth-right-overlay" />
+
+          {/* White Logo centered */}
+          <div className="auth-right-logo">
+            <img
+              src="/white-logo-web.png"
+              alt="Deals Logo"
+            />
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
-
-

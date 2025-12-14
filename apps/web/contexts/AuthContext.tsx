@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react"
 import type { User } from "@repo/utils/types/auth"
 
@@ -29,11 +31,11 @@ function decodeJWT(token: string): { exp?: number } | null {
     const json =
       typeof atob !== "undefined"
         ? decodeURIComponent(
-            atob(base64 || "")
-              .split("")
-              .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-              .join(""),
-          )
+          atob(base64 || "")
+            .split("")
+            .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+            .join(""),
+        )
         : ""
 
     return JSON.parse(json)
