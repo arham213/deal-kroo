@@ -14,7 +14,9 @@ import ListingDetailsDrawer from "../components/ListingDetailsDrawer"
 import ListingsFilterModal from "../components/ListingsFilterModal"
 import AddListingModal from "../components/AddListingModal"
 import { useAuthContext } from "../contexts/AuthContext"
+import { useToast } from "../components/common/ToastContext"
 import { LoggedInHeader } from "../components/common/LoggedInHeader"
+import { Pagination } from "../components/common/Pagination"
 import { Colors } from "@repo/utils/constants/colors"
 
 const BASE_URL = "https://api.dealkroo.com/api"
@@ -26,6 +28,8 @@ const filterTabs: ActiveFilterTab[] = ["All Listings", "For cash", "Installments
 const ListingsPage: NextPage = () => {
   const router = useRouter()
   const { user, token, isAuthenticated, isLoading, logout } = useAuthContext()
+  const { showInfoToast, showErrorToast } = useToast()
+  const isVerified = user?.verificationStatus === "verified"
 
   const [listings, setListings] = useState<ListingState[]>([])
   const [activePropertyTab, setActivePropertyTab] = useState<PropertyTypeTab>("Plots")
@@ -37,11 +41,24 @@ const ListingsPage: NextPage = () => {
   const [totalPages, setTotalPages] = useState(1)
 
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [selectedListing, setSelectedListing] = useState<ListingState | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
   const [isAddListingOpen, setIsAddListingOpen] = useState(false)
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false)
+
+  // Show welcome popup once per session
+  useEffect(() => {
+    const popupShown = sessionStorage.getItem("listings_popup_shown")
+    if (!popupShown && isAuthenticated) {
+      setShowWelcomePopup(true)
+    }
+  }, [isAuthenticated])
+
+  const handleClosePopup = () => {
+    setShowWelcomePopup(false)
+    sessionStorage.setItem("listings_popup_shown", "true")
+  }
 
   const hasFilters = useMemo(
     () => Object.keys(filters || {}).length > 0 || activeFilter !== "All Listings",
@@ -50,14 +67,14 @@ const ListingsPage: NextPage = () => {
 
   const fetchListings = async (page: number, authToken?: string | null) => {
     setLoading(true)
-    setError(null)
+    // setError(null)
 
     try {
       const effectiveToken = authToken ?? token
 
       if (!effectiveToken) {
         setListings([])
-        setError("You must be signed in to view listings.")
+        showErrorToast("You must be signed in to view listings.")
         return
       }
 
@@ -83,11 +100,11 @@ const ListingsPage: NextPage = () => {
         setCurrentPage(pagination?.page || page || 1)
         setTotalPages(pagination?.totalPages || 1)
       } else {
-        setError("Failed to fetch listings")
+        showErrorToast("Failed to fetch listings")
       }
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        setError("Your session has expired. Please sign in again.")
+        showErrorToast("Your session has expired. Please sign in again.")
         await logout()
         router.replace("/auth/sign-in")
         return
@@ -95,7 +112,7 @@ const ListingsPage: NextPage = () => {
 
       const message =
         err instanceof Error ? err.message : "Something went wrong. Please try again later"
-      setError(message)
+      showErrorToast(message)
     } finally {
       setLoading(false)
     }
@@ -303,17 +320,24 @@ const ListingsPage: NextPage = () => {
             <button
               className="listings-add-btn"
               type="button"
-              onClick={() => setIsAddListingOpen(true)}
+              onClick={() => {
+                if (!isVerified) {
+                  showInfoToast("Your account needs to be verified to add listings.", "Access Restricted")
+                  return
+                }
+                setIsAddListingOpen(true)
+              }}
               style={{
                 borderRadius: 100,
                 padding: "12px 24px",
                 border: "none",
-                backgroundColor: "#000000",
+                backgroundColor: isVerified ? "#000000" : "#999999",
                 color: "#ffffff",
                 fontSize: 14,
                 fontWeight: 400,
-                cursor: "pointer",
+                cursor: isVerified ? "pointer" : "not-allowed",
                 whiteSpace: "nowrap",
+                opacity: isVerified ? 1 : 0.7,
               }}
             >
               Add New
@@ -438,17 +462,24 @@ const ListingsPage: NextPage = () => {
             <button
               className="listings-add-btn"
               type="button"
-              onClick={() => setIsAddListingOpen(true)}
+              onClick={() => {
+                if (!isVerified) {
+                  showInfoToast("Your account needs to be verified to add listings.", "Access Restricted")
+                  return
+                }
+                setIsAddListingOpen(true)
+              }}
               style={{
                 borderRadius: 100,
                 padding: "12px 24px",
                 border: "none",
-                backgroundColor: "#000000",
+                backgroundColor: isVerified ? "#000000" : "#999999",
                 color: "#ffffff",
                 fontSize: 14,
                 fontWeight: 400,
-                cursor: "pointer",
+                cursor: isVerified ? "pointer" : "not-allowed",
                 whiteSpace: "nowrap",
+                opacity: isVerified ? 1 : 0.7,
               }}
             >
               Add New
@@ -457,19 +488,8 @@ const ListingsPage: NextPage = () => {
         </div>
 
         {/* Listings Grid */}
-        {error ? (
-          <div
-            style={{
-              padding: 16,
-              borderRadius: 12,
-              backgroundColor: "#fef2f2",
-              color: "#dc2626",
-              fontSize: 14,
-            }}
-          >
-            {error}
-          </div>
-        ) : loading ? (
+
+        {loading ? (
           <div
             style={{
               padding: 48,
@@ -485,7 +505,6 @@ const ListingsPage: NextPage = () => {
               padding: 48,
               textAlign: "center",
               color: "#666666",
-              backgroundColor: "#f9f9f9",
               borderRadius: 12,
             }}
           >
@@ -513,77 +532,12 @@ const ListingsPage: NextPage = () => {
         }
 
         {/* Pagination */}
-        {
-          totalPages > 1 && (
-            <nav
-              aria-label="Listings pages"
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                gap: 8,
-                marginTop: 32,
-                flexWrap: "wrap",
-              }}
-            >
-              <button
-                type="button"
-                onClick={() => handleChangePage(currentPage - 1)}
-                disabled={currentPage === 1 || loading}
-                style={{
-                  padding: "8px 16px",
-                  borderRadius: 100,
-                  border: "1px solid #e0e0e0",
-                  backgroundColor: "#ffffff",
-                  cursor: currentPage === 1 || loading ? "not-allowed" : "pointer",
-                  fontSize: 13,
-                  opacity: currentPage === 1 || loading ? 0.5 : 1,
-                }}
-              >
-                Prev
-              </button>
-
-              {pages.map((page) => (
-                <button
-                  key={page}
-                  type="button"
-                  onClick={() => handleChangePage(page)}
-                  disabled={loading}
-                  style={{
-                    minWidth: 36,
-                    padding: "8px 12px",
-                    borderRadius: 100,
-                    border: page === currentPage ? "none" : "1px solid #e0e0e0",
-                    backgroundColor: page === currentPage ? "#000000" : "#ffffff",
-                    color: page === currentPage ? "#ffffff" : "#333333",
-                    cursor: loading ? "not-allowed" : "pointer",
-                    fontSize: 13,
-                    fontWeight: page === currentPage ? 600 : 400,
-                  }}
-                >
-                  {page}
-                </button>
-              ))}
-
-              <button
-                type="button"
-                onClick={() => handleChangePage(currentPage + 1)}
-                disabled={currentPage === totalPages || loading}
-                style={{
-                  padding: "8px 16px",
-                  borderRadius: 100,
-                  border: "1px solid #e0e0e0",
-                  backgroundColor: "#ffffff",
-                  cursor: currentPage === totalPages || loading ? "not-allowed" : "pointer",
-                  fontSize: 13,
-                  opacity: currentPage === totalPages || loading ? 0.5 : 1,
-                }}
-              >
-                Next
-              </button>
-            </nav>
-          )
-        }
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handleChangePage}
+          loading={loading}
+        />
 
         <ListingDetailsDrawer
           isOpen={isDetailsOpen}
@@ -606,6 +560,73 @@ const ListingsPage: NextPage = () => {
           token={token}
           onSuccess={() => fetchListings(currentPage, token)}
         />
+
+        {/* Welcome Popup - shows once per session */}
+        {showWelcomePopup && (
+          <div
+            onClick={handleClosePopup}
+            style={{
+              position: "fixed",
+              inset: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.85)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 999999,
+              padding: 24,
+              overflow: "auto",
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                position: "relative",
+                width: "auto",
+                maxHeight: "90vh",
+              }}
+            >
+              {/* Close button */}
+              <button
+                type="button"
+                onClick={handleClosePopup}
+                style={{
+                  position: "absolute",
+                  top: 12,
+                  right: 12,
+                  width: 32,
+                  height: 32,
+                  borderRadius: "50%",
+                  border: "none",
+                  backgroundColor: "rgba(0, 0, 0, 0.6)",
+                  color: "#ffffff",
+                  fontSize: 16,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  zIndex: 1,
+                }}
+                aria-label="Close popup"
+              >
+                ✕
+              </button>
+
+              {/* Popup Image */}
+              <img
+                src="/popup-img.jpeg"
+                alt="Welcome"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  maxHeight: "85vh",
+                  objectFit: "contain",
+                  display: "block",
+                  borderRadius: 12,
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div >
     </div >
   )

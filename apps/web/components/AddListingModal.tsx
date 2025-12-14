@@ -21,6 +21,7 @@ import {
 import { Colors } from "@repo/utils/constants/colors"
 import { fontSizes, fontWeights, radius, spacing } from "@repo/utils/styles/tokens"
 import { Validation } from "@repo/utils/validation"
+import { useToast } from "./common/ToastContext"
 import { TextField } from "./TextField"
 
 type AddListingModalProps = {
@@ -63,6 +64,7 @@ export default function AddListingModal({
     onSuccess,
 }: AddListingModalProps) {
     const router = useRouter()
+    const { showSuccessToast, showErrorToast } = useToast()
     const [formData, setFormData] = useState<AddListingState>(createInitialAddListingState)
     const [errors, setErrors] = useState<AddListingErrors>({})
     const [touched, setTouched] = useState<Record<ListingField, boolean>>(
@@ -225,7 +227,7 @@ export default function AddListingModal({
         }
 
         if (!token || !user) {
-            alert("You must be logged in to add a listing")
+            showErrorToast("You must be logged in to add a listing")
             return
         }
 
@@ -233,14 +235,14 @@ export default function AddListingModal({
         try {
             const payload = buildAddListingPayload(formData, user)
             await createListing({ token, payload })
-            alert("Listing added successfully")
+            showSuccessToast("Listing added successfully")
             onSuccess?.()
             onClose()
             router.push("/my-listings")
         } catch (error) {
             const message =
                 error instanceof Error ? error.message : "Something went wrong. Please try again later"
-            alert(message)
+            showErrorToast(message)
         } finally {
             setLoading(false)
         }

@@ -4,6 +4,7 @@ import { ScrollView, Text, View } from "react-native-web"
 import { Colors } from "@repo/utils/constants/colors"
 import { fontSizes, fontWeights, spacing } from "@repo/utils/styles/tokens"
 import { useAuthContext } from "../../contexts/AuthContext"
+import { useToast } from "../../components/common/ToastContext"
 import AuthSplitLayout from "../../components/AuthSplitLayout"
 import { TextField } from "../../components/TextField"
 import { Button } from "../../components/Button"
@@ -24,11 +25,11 @@ import {
 export default function SignInPage() {
   const router = useRouter()
   const { setUser, setToken } = useAuthContext()
+  const { showSuccessToast, showErrorToast } = useToast()
   const [form, setForm] = useState<SignInFormState>(createInitialSignInFormState)
   const [errors, setErrors] = useState<SignInValidationErrors>({})
   const [touched, setTouched] = useState<SignInTouchedState>(createSignInTouchedState(false))
   const [loading, setLoading] = useState(false)
-  const [apiError, setApiError] = useState<string | null>(null)
 
   const validateForm = () => {
     const { isValid, errors: validationErrors } = validateSignInForm(form)
@@ -93,7 +94,6 @@ export default function SignInPage() {
   const isSubmitDisabled = loading || hasEmptyField || hasAnyError
 
   const handleSignIn = async () => {
-    setApiError(null)
     const isValid = validateForm()
     if (!isValid) {
       markAllTouched()
@@ -110,6 +110,11 @@ export default function SignInPage() {
       await setToken(token)
       await setUser(user)
 
+      // Clear popup flag so it shows after every sign-in
+      sessionStorage.removeItem("listings_popup_shown")
+
+      showSuccessToast("Signed in successfully")
+
       const onboardingCompleted = (user as any)?.onBoardingCompleted
       if (onboardingCompleted) {
         router.push("/listings")
@@ -119,7 +124,7 @@ export default function SignInPage() {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Something went wrong. Please try again later"
-      setApiError(message)
+      showErrorToast(message)
     } finally {
       setLoading(false)
     }
@@ -182,12 +187,6 @@ export default function SignInPage() {
             error={touched.password ? errors.password : undefined}
           />
         </View>
-
-        {apiError ? (
-          <Text style={{ fontSize: fontSizes.sm, color: Colors.error, marginTop: spacing.lg }}>
-            {apiError}
-          </Text>
-        ) : null}
 
         <View style={{ marginTop: spacing.xxxl }}>
           <Button

@@ -6,6 +6,7 @@ import { fontSizes, fontWeights, spacing } from "@repo/utils/styles/tokens"
 import AuthSplitLayout from "../../components/AuthSplitLayout"
 import { TextField } from "../../components/TextField"
 import { Button } from "../../components/Button"
+import { useToast } from "../../components/common/ToastContext"
 import {
   buildSignUpRequestBody,
   createInitialSignUpFormState,
@@ -27,11 +28,11 @@ const PASSWORD_HELPER_TEXT =
 
 export default function SignUpPage() {
   const router = useRouter()
+  const { showErrorToast } = useToast()
   const [form, setForm] = useState<SignUpFormState>(createInitialSignUpFormState)
   const [errors, setErrors] = useState<SignUpValidationErrors>({})
   const [touched, setTouched] = useState<SignUpTouchedState>(createSignUpTouchedState(false))
   const [loading, setLoading] = useState(false)
-  const [apiError, setApiError] = useState<string | null>(null)
 
   const validateField = (field: SignUpField, value: string) => {
     return validateSignUpField(field, value)
@@ -121,7 +122,6 @@ export default function SignUpPage() {
   const isSubmitDisabled = loading || hasEmptyRequiredField || hasAnyError
 
   const handleSignUp = async () => {
-    setApiError(null)
     const isValid = validateFormState()
     if (!isValid) {
       markAllTouched()
@@ -140,7 +140,7 @@ export default function SignUpPage() {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Something went wrong. Please try again later"
-      setApiError(message)
+      showErrorToast(message)
     } finally {
       setLoading(false)
     }
@@ -233,11 +233,7 @@ export default function SignUpPage() {
           />
         </View>
 
-        {apiError ? (
-          <Text style={{ fontSize: fontSizes.sm, color: Colors.error, marginTop: spacing.lg }}>
-            {apiError}
-          </Text>
-        ) : null}
+
 
         <View style={{ marginTop: spacing.xxxl }}>
           <Button

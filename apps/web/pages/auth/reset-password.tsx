@@ -3,6 +3,7 @@ import { useRouter } from "next/router"
 import { ScrollView, Text, View } from "react-native-web"
 import { Colors } from "@repo/utils/constants/colors"
 import { fontSizes, fontWeights, radius, spacing } from "@repo/utils/styles/tokens"
+import { useToast } from "../../components/common/ToastContext"
 import AuthSplitLayout from "../../components/AuthSplitLayout"
 import { TextField } from "../../components/TextField"
 import { Button } from "../../components/Button"
@@ -18,6 +19,7 @@ import {
 export default function ResetPasswordPage() {
   const router = useRouter()
   const { userId } = router.query as { userId?: string }
+  const { showSuccessToast, showErrorToast } = useToast()
 
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -27,7 +29,6 @@ export default function ResetPasswordPage() {
     password: false,
     confirmPassword: false,
   })
-  const [apiError, setApiError] = useState<string | null>(null)
 
   const runValidation = () => {
     const { isValid, errors: validationErrors } = validateResetPasswordForm(password, confirmPassword)
@@ -43,9 +44,8 @@ export default function ResetPasswordPage() {
   }
 
   const handleResetPassword = async () => {
-    setApiError(null)
     if (!userId) {
-      setApiError("Invalid or missing user identifier. Please retry the flow.")
+      showErrorToast("Invalid or missing user identifier. Please retry the flow.")
       return
     }
 
@@ -70,11 +70,12 @@ export default function ResetPasswordPage() {
         confirmPassword: false,
       })
 
+      showSuccessToast("Password reset successfully!")
       router.push("/auth/sign-in")
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Something went wrong. Please try again later"
-      setApiError(message)
+      showErrorToast(message)
     } finally {
       setLoading(false)
     }
@@ -263,12 +264,6 @@ export default function ResetPasswordPage() {
             </Text>
           </View>
         </View>
-
-        {apiError ? (
-          <Text style={{ fontSize: fontSizes.sm, color: Colors.error, marginTop: spacing.lg }}>
-            {apiError}
-          </Text>
-        ) : null}
 
         <View style={{ marginTop: spacing.xxxl }}>
           <Button

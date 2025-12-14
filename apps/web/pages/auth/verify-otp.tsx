@@ -4,6 +4,7 @@ import { ScrollView, Text, View } from "react-native-web"
 import { Colors } from "@repo/utils/constants/colors"
 import { fontSizes, fontWeights, radius, spacing } from "@repo/utils/styles/tokens"
 import { useAuthContext } from "../../contexts/AuthContext"
+import { useToast } from "../../components/common/ToastContext"
 import AuthSplitLayout from "../../components/AuthSplitLayout"
 import { Button } from "../../components/Button"
 import {
@@ -15,6 +16,7 @@ import {
 export default function VerifyOtpPage() {
   const router = useRouter()
   const { setUser, setToken } = useAuthContext()
+  const { showSuccessToast, showErrorToast } = useToast()
   const { userId, isSignupOTP } = router.query as {
     userId?: string
     isSignupOTP?: string
@@ -24,7 +26,6 @@ export default function VerifyOtpPage() {
   const [loading, setLoading] = useState(false)
   const [resendTimer, setResendTimer] = useState(0)
   const [touched, setTouched] = useState(false)
-  const [apiError, setApiError] = useState<string | null>(null)
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null)
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
@@ -55,10 +56,9 @@ export default function VerifyOtpPage() {
   const isSubmitDisabled = loading || !isOtpValidLength
 
   const handleVerifyOTP = async () => {
-    setApiError(null)
     if (!userId) {
       setTouched(true)
-      setApiError("Invalid or missing user identifier. Please retry the flow.")
+      showErrorToast("Invalid or missing user identifier. Please retry the flow.")
       return
     }
 
@@ -82,8 +82,10 @@ export default function VerifyOtpPage() {
       if (result.type === "signup") {
         await setToken(result.token)
         await setUser(result.user)
+        showSuccessToast("Email verified successfully!")
         router.replace("/onboarding")
       } else {
+        showSuccessToast("OTP verified successfully!")
         router.push({
           pathname: "/auth/reset-password",
           query: { userId: result.userId },
@@ -92,16 +94,15 @@ export default function VerifyOtpPage() {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Something went wrong. Please try again later"
-      setApiError(message)
+      showErrorToast(message)
     } finally {
       setLoading(false)
     }
   }
 
   const handleResendOTP = async () => {
-    setApiError(null)
     if (!userId) {
-      setApiError("Invalid or missing user identifier. Please retry the flow.")
+      showErrorToast("Invalid or missing user identifier. Please retry the flow.")
       return
     }
 
@@ -128,7 +129,7 @@ export default function VerifyOtpPage() {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Something went wrong. Please try again later"
-      setApiError(message)
+      showErrorToast(message)
     } finally {
       setLoading(false)
     }
@@ -270,17 +271,6 @@ export default function VerifyOtpPage() {
               }}
             >
               Enter the {OTP_LENGTH}-digit code sent to your number
-            </Text>
-          ) : null}
-
-          {apiError ? (
-            <Text
-              style={{
-                fontSize: fontSizes.sm,
-                color: Colors.error,
-              }}
-            >
-              {apiError}
             </Text>
           ) : null}
 

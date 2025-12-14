@@ -6,6 +6,7 @@ import { fontSizes, fontWeights, spacing } from "@repo/utils/styles/tokens"
 import AuthSplitLayout from "../../components/AuthSplitLayout"
 import { TextField } from "../../components/TextField"
 import { Button } from "../../components/Button"
+import { useToast } from "../../components/common/ToastContext"
 import {
   getForgotPasswordEmailError,
   sendForgotPasswordOtp,
@@ -13,10 +14,10 @@ import {
 
 export default function ForgotPasswordPage() {
   const router = useRouter()
+  const { showErrorToast } = useToast()
   const [email, setEmail] = useState("")
   const [touched, setTouched] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [apiError, setApiError] = useState<string | null>(null)
 
   const emailValidationError = useMemo(
     () => getForgotPasswordEmailError(email),
@@ -26,7 +27,6 @@ export default function ForgotPasswordPage() {
   const isSubmitDisabled = loading || Boolean(emailValidationError)
 
   const handleSendOTP = async () => {
-    setApiError(null)
     if (emailValidationError) {
       setTouched(true)
       return
@@ -45,7 +45,7 @@ export default function ForgotPasswordPage() {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Something went wrong. Please try again later"
-      setApiError(message)
+      showErrorToast(message)
     } finally {
       setLoading(false)
     }
@@ -106,12 +106,6 @@ export default function ForgotPasswordPage() {
             error={touched ? emailValidationError : undefined}
           />
         </View>
-
-        {apiError ? (
-          <Text style={{ fontSize: fontSizes.sm, color: Colors.error, marginTop: spacing.lg }}>
-            {apiError}
-          </Text>
-        ) : null}
 
         <View style={{ marginTop: spacing.xxxl }}>
           <Button

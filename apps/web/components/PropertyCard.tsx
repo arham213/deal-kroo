@@ -67,12 +67,7 @@ export default function PropertyCardWeb({
             .toUpperCase()
         : "U"
 
-    const title = `${property.area} ${property.propertyType === "house"
-        ? "House"
-        : property.propertyType === "commercial plot"
-            ? "Commercial Plot"
-            : "Plot"
-        }`
+    const title = `${property.area}`
 
     const priceContent = (() => {
         if (property.listingType === "rent" && property.rentPerMonth) {

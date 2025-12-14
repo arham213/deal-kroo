@@ -11,7 +11,9 @@ import {
 import { Colors } from "@repo/utils/constants/colors"
 import { fontSizes, fontWeights, radius, spacing } from "@repo/utils/styles/tokens"
 import { useAuthContext } from "../contexts/AuthContext"
+import { useToast } from "../components/common/ToastContext"
 import { LoggedInHeader } from "../components/common/LoggedInHeader"
+import { Pagination } from "../components/common/Pagination"
 
 const BASE_URL = "https://api.dealkroo.com/api"
 const PAGE_SIZE = parseInt(process.env.PAGINATION_LIMIT || "25", 10)
@@ -19,11 +21,10 @@ const PAGE_SIZE = parseInt(process.env.PAGINATION_LIMIT || "25", 10)
 const MyNotesPage: NextPage = () => {
   const router = useRouter()
   const { user, token, isAuthenticated, isLoading, logout } = useAuthContext()
+  const { showSuccessToast, showErrorToast } = useToast()
 
   const [notes, setNotes] = useState<Note[]>([])
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
@@ -115,7 +116,7 @@ const MyNotesPage: NextPage = () => {
   const fetchNotes = useCallback(
     async (page: number, authToken?: string | null) => {
       setLoading(true)
-      setError(null)
+
 
       try {
         const effectiveToken = authToken ?? token
@@ -161,11 +162,11 @@ const MyNotesPage: NextPage = () => {
             setTotalPages(hasMoreResults ? page + 1 : page)
           }
         } else {
-          setError("Failed to fetch notes")
+          showErrorToast("Failed to fetch notes")
         }
       } catch (err) {
         if (axios.isAxiosError(err) && err.response?.status === 401) {
-          setError("Your session has expired. Please sign in again.")
+          showErrorToast("Your session has expired. Please sign in again.")
           await logout()
           router.replace("/auth/sign-in")
           return
@@ -173,7 +174,7 @@ const MyNotesPage: NextPage = () => {
 
         const message =
           err instanceof Error ? err.message : "Something went wrong. Please try again later"
-        setError(message)
+        showErrorToast(message)
       } finally {
         setLoading(false)
       }
@@ -240,7 +241,7 @@ const MyNotesPage: NextPage = () => {
         },
       )
 
-      alert("Note added successfully")
+      showSuccessToast("Note added successfully")
       setShowAddModal(false)
       setNewNoteDescription("")
       setNoteTouched(false)
@@ -249,7 +250,7 @@ const MyNotesPage: NextPage = () => {
       fetchNotes(1, token)
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        alert("Your session has expired. Please sign in again.")
+        showErrorToast("Your session has expired. Please sign in again.")
         await logout()
         router.replace("/auth/sign-in")
         return
@@ -257,7 +258,7 @@ const MyNotesPage: NextPage = () => {
 
       const message =
         err instanceof Error ? err.message : "Something went wrong. Please try again later"
-      alert(message)
+      showErrorToast(message)
     } finally {
       setSubmitting(false)
     }
@@ -278,9 +279,10 @@ const MyNotesPage: NextPage = () => {
       })
 
       setNotes((prev) => prev.filter((note) => note._id !== id))
+      showSuccessToast("Note marked as done")
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        alert("Your session has expired. Please sign in again.")
+        showErrorToast("Your session has expired. Please sign in again.")
         await logout()
         router.replace("/auth/sign-in")
         return
@@ -288,7 +290,7 @@ const MyNotesPage: NextPage = () => {
 
       const message =
         err instanceof Error ? err.message : "Something went wrong. Please try again later"
-      alert(message)
+      showErrorToast(message)
     }
   }
 
@@ -352,19 +354,7 @@ const MyNotesPage: NextPage = () => {
           </header>
 
           {/* Notes list */}
-          {error ? (
-            <div
-              style={{
-                padding: spacing.md,
-                borderRadius: radius.md,
-                backgroundColor: Colors.backgroundCash,
-                color: Colors.textCash,
-                fontSize: fontSizes.sm,
-              }}
-            >
-              {error}
-            </div>
-          ) : notes.length === 0 && !loading ? (
+          {notes.length === 0 && !loading ? (
             <div
               style={{
                 padding: spacing.xxxl,
@@ -469,81 +459,12 @@ const MyNotesPage: NextPage = () => {
           )}
 
           {/* Numbered pagination */}
-          {totalPages > 1 && (
-            <nav
-              aria-label="My notes pages"
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                gap: spacing.xs,
-                marginTop: spacing.xl,
-                flexWrap: "wrap",
-              }}
-            >
-              {/* Pagination buttons - keeping existing logic but maybe simplified style if needed. Existing style is fine. */}
-              <button
-                type="button"
-                onClick={() => handleChangePage(currentPage - 1)}
-                disabled={currentPage === 1 || loading}
-                style={{
-                  padding: `${spacing.xs}px ${spacing.sm}px`,
-                  borderRadius: radius.pill,
-                  border: `1px solid ${Colors.border}`,
-                  backgroundColor: "transparent",
-                  cursor:
-                    currentPage === 1 || loading ? "not-allowed" : "pointer",
-                  fontSize: fontSizes.xs,
-                  opacity: currentPage === 1 || loading ? 0.5 : 1,
-                }}
-              >
-                Prev
-              </button>
-
-              {pages.map((page) => (
-                <button
-                  key={page}
-                  type="button"
-                  onClick={() => handleChangePage(page)}
-                  disabled={loading}
-                  style={{
-                    minWidth: 32,
-                    padding: `${spacing.xs}px ${spacing.sm}px`,
-                    borderRadius: radius.pill,
-                    border: page === currentPage ? "none" : `1px solid ${Colors.border}`,
-                    backgroundColor:
-                      page === currentPage ? Colors.neutral100 : "transparent",
-                    color: page === currentPage ? Colors.neutral10 : Colors.text,
-                    cursor: loading ? "not-allowed" : "pointer",
-                    fontSize: fontSizes.xs,
-                    fontWeight: page === currentPage ? fontWeights.semibold : fontWeights.medium,
-                  }}
-                >
-                  {page}
-                </button>
-              ))}
-
-              <button
-                type="button"
-                onClick={() => handleChangePage(currentPage + 1)}
-                disabled={currentPage === totalPages || loading}
-                style={{
-                  padding: `${spacing.xs}px ${spacing.sm}px`,
-                  borderRadius: radius.pill,
-                  border: `1px solid ${Colors.border}`,
-                  backgroundColor: "transparent",
-                  cursor:
-                    currentPage === totalPages || loading
-                      ? "not-allowed"
-                      : "pointer",
-                  fontSize: fontSizes.xs,
-                  opacity: currentPage === totalPages || loading ? 0.5 : 1,
-                }}
-              >
-                Next
-              </button>
-            </nav>
-          )}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handleChangePage}
+            loading={loading}
+          />
         </div>
 
         {/* Add Note Modal */}

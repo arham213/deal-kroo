@@ -1,6 +1,7 @@
 import type { AppProps } from "next/app"
 import Head from "next/head"
 import { AuthProvider } from "../contexts/AuthContext"
+import { ToastProvider } from "../components/common/ToastContext"
 import "../app/globals.css"
 
 export default function MyApp({ Component, pageProps }: AppProps) {
@@ -33,7 +34,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         />
       </Head>
       <AuthProvider>
-        <Component {...pageProps} />
+        <ToastProvider>
+          <Component {...pageProps} />
+        </ToastProvider>
       </AuthProvider>
     </>
   )

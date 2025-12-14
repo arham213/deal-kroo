@@ -21,6 +21,7 @@ import { Colors } from "@repo/utils/constants/colors"
 import { fontSizes, fontWeights, radius, spacing } from "@repo/utils/styles/tokens"
 import { Validation } from "@repo/utils/validation"
 import { useAuthContext } from "../contexts/AuthContext"
+import { useToast } from "../components/common/ToastContext"
 
 const AREA_TYPE_OPTIONS = ["Marla", "Kanal"] as const
 const PRESET_AREA_SIZES: AreaSize[] = ["3 Marla", "5 Marla", "10 Marla", "15 Marla", "1 Kanal"]
@@ -97,6 +98,7 @@ const COMMERCIAL_BLOCKS = [
 const AddListingPage: NextPage = () => {
   const router = useRouter()
   const { user, token, isAuthenticated, isLoading, logout } = useAuthContext()
+  const { showSuccessToast, showErrorToast } = useToast()
 
   const [formData, setFormData] = useState<AddListingState>(createInitialAddListingState)
   const [errors, setErrors] = useState<AddListingErrors>({})
@@ -391,12 +393,12 @@ const AddListingPage: NextPage = () => {
         payload,
       })
 
-      alert("Listing added successfully")
+      showSuccessToast("Listing added successfully")
       router.replace("/my-listings")
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Something went wrong. Please try again later"
-      alert(message)
+      showErrorToast(message)
     } finally {
       setLoading(false)
     }

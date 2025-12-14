@@ -15,7 +15,9 @@ import ListingsFilterModal from "../components/ListingsFilterModal"
 import ListingDetailsDrawer from "../components/ListingDetailsDrawer"
 import AddListingModal from "../components/AddListingModal"
 import { useAuthContext } from "../contexts/AuthContext"
+import { useToast } from "../components/common/ToastContext"
 import { LoggedInHeader } from "../components/common/LoggedInHeader"
+import { Pagination } from "../components/common/Pagination"
 
 const BASE_URL = "https://api.dealkroo.com/api"
 const PAGE_SIZE = parseInt(process.env.PAGINATION_LIMIT || "25", 10)
@@ -26,6 +28,7 @@ const filterTabs: ActiveFilterTab[] = ["All Listings", "For cash", "Installments
 const MyListingsPage: NextPage = () => {
   const router = useRouter()
   const { user, token, isAuthenticated, isLoading, logout } = useAuthContext()
+  const { showErrorToast } = useToast()
 
   const [listings, setListings] = useState<ListingState[]>([])
   const [activePropertyTab, setActivePropertyTab] = useState<PropertyTypeTab>("Plots")
@@ -37,7 +40,6 @@ const MyListingsPage: NextPage = () => {
   const [totalPages, setTotalPages] = useState(1)
 
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
   const [selectedListing, setSelectedListing] = useState<ListingState | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
@@ -61,7 +63,6 @@ const MyListingsPage: NextPage = () => {
 
   const fetchMyListings = async (page: number, authToken?: string | null, userId?: string) => {
     setLoading(true)
-    setError(null)
 
     try {
       const effectiveToken = authToken ?? token
@@ -69,7 +70,7 @@ const MyListingsPage: NextPage = () => {
 
       if (!effectiveToken || !effectiveUserId) {
         setListings([])
-        setError("You must be signed in to view your listings.")
+        showErrorToast("You must be signed in to view your listings.")
         return
       }
 
@@ -96,11 +97,11 @@ const MyListingsPage: NextPage = () => {
         setCurrentPage(pagination?.page || page || 1)
         setTotalPages(pagination?.totalPages || 1)
       } else {
-        setError("Failed to fetch your listings")
+        showErrorToast("Failed to fetch your listings")
       }
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        setError("Your session has expired. Please sign in again.")
+        showErrorToast("Your session has expired. Please sign in again.")
         await logout()
         router.replace("/auth/sign-in")
         return
@@ -108,7 +109,7 @@ const MyListingsPage: NextPage = () => {
 
       const message =
         err instanceof Error ? err.message : "Something went wrong. Please try again later"
-      setError(message)
+      showErrorToast(message)
     } finally {
       setLoading(false)
     }
@@ -116,7 +117,7 @@ const MyListingsPage: NextPage = () => {
 
   const handleDeleteListing = async (listingId: string) => {
     if (!token) {
-      setError("You must be signed in to delete a listing.")
+      showErrorToast("You must be signed in to delete a listing.")
       return
     }
 
@@ -131,7 +132,7 @@ const MyListingsPage: NextPage = () => {
       fetchMyListings(currentPage, token, user?._id)
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        setError("Your session has expired. Please sign in again.")
+        showErrorToast("Your session has expired. Please sign in again.")
         await logout()
         router.replace("/auth/sign-in")
         return
@@ -139,7 +140,7 @@ const MyListingsPage: NextPage = () => {
 
       const message =
         err instanceof Error ? err.message : "Failed to delete listing. Please try again."
-      setError(message)
+      showErrorToast(message)
     }
   }
 
@@ -534,19 +535,7 @@ const MyListingsPage: NextPage = () => {
         </div>
 
         {/* Listings Grid */}
-        {error ? (
-          <div
-            style={{
-              padding: 16,
-              borderRadius: 12,
-              backgroundColor: "#fef2f2",
-              color: "#dc2626",
-              fontSize: 14,
-            }}
-          >
-            {error}
-          </div>
-        ) : loading ? (
+        {loading ? (
           <div
             style={{
               padding: 48,
@@ -562,7 +551,6 @@ const MyListingsPage: NextPage = () => {
               padding: 48,
               textAlign: "center",
               color: "#666666",
-              backgroundColor: "#f9f9f9",
               borderRadius: 12,
             }}
           >
@@ -591,75 +579,12 @@ const MyListingsPage: NextPage = () => {
         )}
 
         {/* Pagination */}
-        {totalPages > 1 && (
-          <nav
-            aria-label="My listings pages"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: 8,
-              marginTop: 32,
-              flexWrap: "wrap",
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => handleChangePage(currentPage - 1)}
-              disabled={currentPage === 1 || loading}
-              style={{
-                padding: "8px 16px",
-                borderRadius: 100,
-                border: "1px solid #e0e0e0",
-                backgroundColor: "#ffffff",
-                cursor: currentPage === 1 || loading ? "not-allowed" : "pointer",
-                fontSize: 13,
-                opacity: currentPage === 1 || loading ? 0.5 : 1,
-              }}
-            >
-              Prev
-            </button>
-
-            {pages.map((page) => (
-              <button
-                key={page}
-                type="button"
-                onClick={() => handleChangePage(page)}
-                disabled={loading}
-                style={{
-                  minWidth: 36,
-                  padding: "8px 12px",
-                  borderRadius: 100,
-                  border: page === currentPage ? "none" : "1px solid #e0e0e0",
-                  backgroundColor: page === currentPage ? "#000000" : "#ffffff",
-                  color: page === currentPage ? "#ffffff" : "#333333",
-                  cursor: loading ? "not-allowed" : "pointer",
-                  fontSize: 13,
-                  fontWeight: page === currentPage ? 600 : 400,
-                }}
-              >
-                {page}
-              </button>
-            ))}
-
-            <button
-              type="button"
-              onClick={() => handleChangePage(currentPage + 1)}
-              disabled={currentPage === totalPages || loading}
-              style={{
-                padding: "8px 16px",
-                borderRadius: 100,
-                border: "1px solid #e0e0e0",
-                backgroundColor: "#ffffff",
-                cursor: currentPage === totalPages || loading ? "not-allowed" : "pointer",
-                fontSize: 13,
-                opacity: currentPage === totalPages || loading ? 0.5 : 1,
-              }}
-            >
-              Next
-            </button>
-          </nav>
-        )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handleChangePage}
+          loading={loading}
+        />
 
         <ListingDetailsDrawer
           isOpen={isDetailsOpen}

@@ -5,6 +5,7 @@ import { completeOnboarding } from "@repo/utils/auth/onboarding"
 import { Colors } from "@repo/utils/constants/colors"
 import { fontSizes, fontWeights, radius, spacing } from "@repo/utils/styles/tokens"
 import { useAuthContext } from "../contexts/AuthContext"
+import { useToast } from "../components/common/ToastContext"
 import OnboardingSplitLayout from "../components/OnboardingSplitLayout"
 
 const BASE_URL = "https://api.dealkroo.com/api"
@@ -30,6 +31,7 @@ const slides = [
 const OnboardingPage: NextPage = () => {
   const router = useRouter()
   const { user, token, isAuthenticated, isLoading, setUser, checkAuth } = useAuthContext()
+  const { showSuccessToast, showErrorToast } = useToast()
 
   const [currentIndex, setCurrentIndex] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -68,13 +70,14 @@ const OnboardingPage: NextPage = () => {
       // Refresh auth context (in case other flags depend on this)
       await checkAuth()
 
+      showSuccessToast("Onboarding completed successfully!")
       router.replace("/listings")
     } catch (error) {
       const message =
         error instanceof Error
           ? error.message
           : "Failed to complete onboarding. Please try again."
-      alert(message)
+      showErrorToast(message)
     } finally {
       setLoading(false)
     }

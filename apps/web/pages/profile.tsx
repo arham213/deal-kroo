@@ -15,6 +15,7 @@ import { Colors } from "@repo/utils/constants/colors"
 import { fontSizes, fontWeights, radius, spacing } from "@repo/utils/styles/tokens"
 import { Validation } from "@repo/utils/validation"
 import { useAuthContext } from "../contexts/AuthContext"
+import { useToast } from "../components/common/ToastContext"
 import { LoggedInHeader } from "../components/common/LoggedInHeader"
 
 const BASE_URL = "https://api.dealkroo.com/api"
@@ -34,6 +35,7 @@ const emptyUser: User = {
 const ProfilePage: NextPage = () => {
   const router = useRouter()
   const { user, token, isAuthenticated, isLoading, logout, setUser } = useAuthContext()
+  const { showSuccessToast, showErrorToast } = useToast()
 
   const [profile, setProfile] = useState<User>(user ?? emptyUser)
   const [editData, setEditData] = useState<User>(user ?? emptyUser)
@@ -210,6 +212,7 @@ const ProfilePage: NextPage = () => {
         })
 
         setGlobalSuccess("Profile updated successfully!")
+        showSuccessToast("Profile updated successfully!")
       } else {
         setEditData(profile)
         setErrors({})
@@ -220,6 +223,7 @@ const ProfilePage: NextPage = () => {
           estateName: false,
         })
         setGlobalError(response.data?.message || "Failed to update profile")
+        showErrorToast(response.data?.message || "Failed to update profile")
       }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -245,6 +249,7 @@ const ProfilePage: NextPage = () => {
         )
       } else {
         setGlobalError("Something went wrong. Please try again later")
+        showErrorToast("Something went wrong. Please try again later")
       }
     } finally {
       setLoading(false)
@@ -258,9 +263,11 @@ const ProfilePage: NextPage = () => {
     try {
       setIsLoggingOut(true)
       await logout()
+      showSuccessToast("Logged out successfully")
       router.replace("/auth/sign-in")
     } catch {
       setGlobalError("Failed to logout. Please try again.")
+      showErrorToast("Failed to logout. Please try again.")
     } finally {
       setIsLoggingOut(false)
     }
@@ -288,10 +295,12 @@ const ProfilePage: NextPage = () => {
       if (response.data?.success) {
         setShowDeleteModal(false)
         setGlobalSuccess("Account deleted successfully!")
+        showSuccessToast("Account deleted successfully!")
         await logout()
         router.replace("/auth/sign-in")
       } else {
         setGlobalError(response.data?.message || "Failed to delete account")
+        showErrorToast(response.data?.message || "Failed to delete account")
       }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -309,6 +318,7 @@ const ProfilePage: NextPage = () => {
         setGlobalError(message)
       } else {
         setGlobalError("Something went wrong. Please try again later")
+        showErrorToast("Something went wrong. Please try again later")
       }
     } finally {
       setIsDeleting(false)
@@ -338,7 +348,7 @@ const ProfilePage: NextPage = () => {
         {/* Main Content */}
         <div
           style={{
-            maxWidth: 1000,
+            maxWidth: 1200,
             margin: "0 auto",
             padding: `${spacing.xxxl}px ${spacing.xl}px`,
           }}
@@ -355,36 +365,6 @@ const ProfilePage: NextPage = () => {
             My Profile
           </h1>
 
-          {/* Status messages */}
-          {globalError && (
-            <div
-              style={{
-                marginBottom: spacing.md,
-                padding: spacing.sm,
-                borderRadius: radius.md,
-                backgroundColor: Colors.backgroundCash,
-                color: Colors.textCash,
-                fontSize: fontSizes.sm,
-              }}
-            >
-              {globalError}
-            </div>
-          )}
-          {globalSuccess && (
-            <div
-              style={{
-                marginBottom: spacing.md,
-                padding: spacing.sm,
-                borderRadius: radius.md,
-                backgroundColor: "#ECFDF5",
-                color: Colors.success2,
-                fontSize: fontSizes.sm,
-              }}
-            >
-              {globalSuccess}
-            </div>
-          )}
-
           {/* Profile Form */}
           <form
             onSubmit={(e) => {
@@ -395,7 +375,7 @@ const ProfilePage: NextPage = () => {
             <style>{`
               .profile-form-container {
                 display: flex;
-                gap: 48px;
+                gap: 70px;
                 align-items: flex-start;
               }
               .profile-form-grid {
