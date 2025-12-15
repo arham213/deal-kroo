@@ -324,6 +324,7 @@ const MyNotesPage: NextPage = () => {
               gap: spacing.md,
               flexWrap: "wrap",
               marginTop: spacing.md,
+              width: "100%",
             }}
           >
             <h1
@@ -370,7 +371,7 @@ const MyNotesPage: NextPage = () => {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(450px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
                 gap: spacing.lg,
               }}
             >

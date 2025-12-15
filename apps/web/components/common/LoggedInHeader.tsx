@@ -292,6 +292,12 @@ export function LoggedInHeader() {
                             borderTop: "1px solid #f0f0f0",
                             backgroundColor: "#ffffff",
                             padding: "16px 24px",
+                            position: "absolute",
+                            top: "100%",
+                            left: 0,
+                            right: 0,
+                            height: "calc(100vh - 60px)", // Approximate header height
+                            zIndex: 49,
                         }}
                     >
                         <nav style={{ display: "flex", flexDirection: "column", gap: 16 }}>

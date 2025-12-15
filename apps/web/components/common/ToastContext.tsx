@@ -151,18 +151,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
             {/* Toast Container */}
             <div
-                style={{
-                    position: "fixed",
-                    top: spacing.xxl,
-                    right: spacing.xxl,
-                    zIndex: 99999,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: spacing.md,
-                    maxWidth: 420,
-                    minWidth: 320,
-                }}
+                className="toast-container"
             >
                 {toasts.map((toast) => {
                     const colors = toastColors[toast.type]
@@ -259,6 +248,31 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             transform: translateX(0);
             opacity: 1;
           }
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 32px;
+            right: 32px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end; /* Align to right */
+            gap: 16px;
+            max-width: 420px;
+            min-width: 320px;
+        }
+
+        @media (max-width: 480px) {
+            .toast-container {
+                right: 16px;
+                left: 16px;
+                top: 16px;
+                min-width: 0;
+                width: auto;
+                max-width: none;
+                align-items: center;
+            }
         }
       `}</style>
         </ToastContext.Provider>

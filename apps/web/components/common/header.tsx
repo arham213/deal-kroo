@@ -156,7 +156,13 @@ export function Header() {
           <div
             style={{
               borderTop: `1px solid ${Colors.neutral80}`,
-              backgroundColor: Colors.neutral100,
+              backgroundColor: "rgb(var(--background) / var(--tw-bg-opacity, 1))",
+              position: "absolute",
+              top: "100%",
+              left: 0,
+              right: 0,
+              height: "calc(100vh - 80px)",
+              zIndex: 49,
             }}
           >
             <nav
