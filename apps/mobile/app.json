@@ -1,0 +1,66 @@
+{
+  "expo": {
+    "name": "Deal Kroo",
+    "slug": "deal-kroo",
+    "version": "1.0.2",
+    "orientation": "portrait",
+    "icon": "./assets/images/app-icon.png",
+    "scheme": "dealkarofrontend",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "buildNumber": "4",
+      "bundleIdentifier": "com.arham1.dealkaro"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#000000"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.arham1.dealkaro"
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "root": "app"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/white-logo.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#000000",
+          "dark": {
+            "backgroundColor": "#000000"
+          }
+        }
+      ],
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "70a69589-9bd7-41b3-9c7e-936d38f303ab"
+      }
+    },
+    "owner": "arham1",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/70a69589-9bd7-41b3-9c7e-936d38f303ab"
+    }
+  }
+}

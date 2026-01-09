@@ -78,8 +78,8 @@ const styles = StyleSheet.create({
   label: {
     fontSize: fontSizes.sm,
     fontFamily: fontFamilies.primary,
-    fontWeight: fontWeights.medium,
-    color: Colors.text,
+    fontWeight: fontWeights.semibold,
+    color: Colors.black,
   },
   inputWrapper: {
     borderWidth: 1,
