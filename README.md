@@ -7,7 +7,7 @@
 
 Dealer-to-dealer real estate web platform. Serves as the web interface for the Deal Krein system, backed by a shared Node.js REST API used by both the web and mobile applications.
 
-**Live:** [your-live-url.vercel.app](https://your-live-url.vercel.app) &nbsp;|&nbsp; **Backend:** [Deal-Karo-Backend](https://github.com/arham213/Deal-Karo-Backend) &nbsp;|&nbsp; **Mobile:** [Deal-Karo-Frontend](https://github.com/arham213/Deal-Karo-Frontend)
+**Live:** [dealkroo.com](https://dealkroo.com) &nbsp;|&nbsp; **Backend:** [Deal-Karo-Backend](https://github.com/arham213/Deal-Karo-Backend) &nbsp;|&nbsp; **Mobile:** [Deal-Karo-Frontend](https://github.com/arham213/Deal-Karo-Frontend)
 
 ---
 
